@@ -11,7 +11,6 @@
   let dragOffsetY = 0;
   let previousSize = { width: window.width, height: window.height, x: window.x, y: window.y };
   let isMaximized = false;
-  let isMinimized = false;
   let isAnimating = false;
 
   function handleMouseDown(e: MouseEvent) {
@@ -28,14 +27,14 @@
 
   function handleMouseUp() {
     isDragging = false;
-  }
+}
 
-  function closeWindow() {
+function closeWindow() {
     windowStore.closeWindow(window.id);
-  }
+}
 
 function minimizeWindow() {
-    isMinimized = true;
+  windowStore.minimizeWindow(window.id);
 }
 
 function maximizeWindow() {
@@ -55,7 +54,7 @@ function maximizeWindow() {
 
 <svelte:window on:mousemove={handleMouseMove} on:mouseup={handleMouseUp} />
 
-{#if !isMinimized}
+{#if !window.isMinimized}
 <div
   class="window"
   style="

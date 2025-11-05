@@ -24,6 +24,18 @@ function createWindowStore() {
           w.id === id ? { ...w, x, y } : w
         )
       ),
+    minimizeWindow: (id: string) =>
+      update(windows =>
+        windows.map(w =>
+          w.id === id ? { ...w, isMinimized: true } : w
+        )
+      ),
+    restoreWindow: (id: string) =>
+      update(windows =>
+        windows.map(w =>
+          w.id === id ? { ...w, isMinimized: false } : w
+        )
+      ),
     resizeWindow: (id: string, width: number, height: number) =>
       update(windows =>
         windows.map(w =>

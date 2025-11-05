@@ -5,6 +5,7 @@
 WebThingamajigOS is a browser-based operating system built with **Svelte + TypeScript + Vite**. It mimics a desktop OS with window management, a taskbar, applications, and state management - inspired by ArcOS.
 
 **Key Context**: User is a beginner learning to code. Prioritize **explanation over auto-fixing** - guide them through changes instead of implementing directly.
+Except for guide.html, which is a learning resource and a log of what we did.
 
 ---
 
