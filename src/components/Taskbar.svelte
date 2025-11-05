@@ -21,8 +21,13 @@
     showStartMenu = !showStartMenu;
   }
 
-  function closeStartMenu() {
-    showStartMenu = false;
+  // Close menu when clicking outside
+  function handleClickOutside(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    // Only close if clicking outside the taskbar-left
+    if (!target.closest('.taskbar-left')) {
+      showStartMenu = false;
+    }
   }
 
   // Example: Launch Text Editor (when you create the app)
@@ -42,12 +47,12 @@
         isMaximized: false,
         isFocused: true,
       });
-      closeStartMenu();
+      showStartMenu = false;
     }
   }
 </script>
 
-<svelte:window on:click={closeStartMenu} />
+<svelte:window on:click={handleClickOutside} />
 
 <div class="taskbar">
   <div class="taskbar-left">
@@ -55,10 +60,15 @@
     {#if showStartMenu}
       <div class="start-menu" role="menu">
         <div class="menu-header">Applications</div>
-        <!-- Add app launcher buttons here when you create apps -->
-        <p style="color: #999; padding: 10px; text-align: center; font-size: 12px;">
-          No apps installed yet
-        </p>
+        {#each Array.from(appRegistry.entries()) as [appName, app]}
+          <button class="app-button" on:click={() => launchApp(appName)}>
+            {app.title}
+          </button>
+        {:else}
+          <p style="color: #999; padding: 10px; text-align: center; font-size: 12px;">
+            No apps installed yet
+          </p>
+        {/each}
       </div>
     {/if}
   </div>
