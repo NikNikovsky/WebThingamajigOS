@@ -39,8 +39,8 @@ function handleWidgetMouseUp() {
 <svelte:window on:mousemove={handleWidgetMouseMove} on:mouseup={handleWidgetMouseUp} />
 
 <div class="desktop">
-  <h1 class="desktop-title">WebOS</h1>
-  <p class="desktop-subtitle">An attempt of a Web OS</p>
+  <h1 class="desktop-title">Fatuus</h1>
+  <p class="desktop-subtitle">Fatuus Erratum</p>
   <p class="desktop-subsubtitle">Made by an idiot (Me, Nik)</p>
 </div>
   <div 

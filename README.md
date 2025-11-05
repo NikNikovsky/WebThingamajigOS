@@ -1,5 +1,5 @@
-# WebThingamajigOS
-Just my (probably bad) attempt at trying to code a webOS without any prior expierience.
+# Fatuus
+Just my (probably bad) attempt at trying to code a tiny browser-only webOS without any prior experience.
 
 It does run (locally)
 
