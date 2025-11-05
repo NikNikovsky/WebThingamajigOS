@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Window as WindowType } from '../types/window';
   import { windowStore } from '../state/windowStore';
+  import { scale, fade } from 'svelte/transition';
   
   export let window: WindowType;
   export let app: any; // The app component
@@ -8,6 +9,10 @@
   let isDragging = false;
   let dragOffsetX = 0;
   let dragOffsetY = 0;
+  let previousSize = { width: window.width, height: window.height, x: window.x, y: window.y };
+  let isMaximized = false;
+  let isMinimized = false;
+  let isAnimating = false;
 
   function handleMouseDown(e: MouseEvent) {
     isDragging = true;
@@ -29,19 +34,30 @@
     windowStore.closeWindow(window.id);
   }
 
-  function minimizeWindow() {
-    // To be eventually completed, maybe, perchance, someday, who knows, maybe not, when I feel like it, etc.
-  }
+function minimizeWindow() {
+    isMinimized = true;
+}
 
-  function maximizeWindow() {
-    // To be eventually completed, maybe, perchance, someday, who knows, maybe not, when I feel like it, etc.
+function maximizeWindow() {
+  if (isMaximized) {
+    windowStore.moveWindow(window.id, previousSize.x, previousSize.y);
+    windowStore.resizeWindow(window.id, previousSize.width, previousSize.height);
+    isMaximized = false;
+  } else {
+    previousSize = { width: window.width, height: window.height, x: window.x, y: window.y };
+    windowStore.moveWindow(window.id, 0, 0);
+    // Use viewport size minus taskbar
+    windowStore.resizeWindow(window.id, document.documentElement.clientWidth, document.documentElement.clientHeight - 50);
+    isMaximized = true;
   }
+}
 </script>
 
 <svelte:window on:mousemove={handleMouseMove} on:mouseup={handleMouseUp} />
 
+{#if !isMinimized}
 <div
-  class="window"
+  class="window class:minimizing={isAnimating}"
   style="
     left: {window.x}px;
     top: {window.y}px;
@@ -53,7 +69,6 @@
   on:focus={() => {}}
   role="presentation"
 >
-  <!-- Title bar -->
   <div class="titlebar" on:mousedown={handleMouseDown} role="presentation">
     <span>{window.title}</span>
     <div class="buttons">
@@ -63,21 +78,43 @@
     </div>
   </div>
 
-  <!-- Content -->
   <div class="content">
     <svelte:component this={app} />
   </div>
 </div>
+{/if}
 
 <style>
   .window {
     position: fixed;
-    background: white;
     border-radius: 6px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 0 1px rgba(102, 126, 234, 0.3);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+  }
+   @keyframes minimizeOut {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+  
+  .window {
+    position: fixed;
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(102, 126, 234, 0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  
+  .window.minimizing {
+    animation: minimizeOut 0.3s ease-out forwards;
   }
 
   .titlebar {
