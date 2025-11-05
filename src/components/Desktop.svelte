@@ -38,6 +38,7 @@ function handleWidgetMouseUp() {
 
 <svelte:window on:mousemove={handleWidgetMouseMove} on:mouseup={handleWidgetMouseUp} />
 
+// Originally named WebThingamajigOS
 <div class="desktop">
   <h1 class="desktop-title">Fatuus</h1>
   <p class="desktop-subtitle">Fatuus Erratum</p>
