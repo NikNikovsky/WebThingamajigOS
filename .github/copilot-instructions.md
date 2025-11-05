@@ -146,10 +146,10 @@ windowStore.focusWindow(windowId);
 ## Current Known Issues & TODOs
 
 - **Window dragging/resizing**: Handlers stubbed in `Window.svelte`, needs implementation
-- **Window minimize/maximize**: Buttons exist but logic not implemented
 - **File manager app**: Not yet created
 - **Settings app**: Not yet created
 - **CSS positioning**: Windows may overlap taskbar - needs padding adjustment
+Also check the code, README and with the user for latest known issues.
 
 ---
 
@@ -159,4 +159,3 @@ windowStore.focusWindow(windowId);
 - **Reference the guide** - Link to `guide.html` sections for learning context
 - **No auto-fixes** - User implements to learn; only fix syntax errors breaking compilation
 - **Ask clarifying questions** - When visual issues reported, ask what specifically looks wrong
-- **Celebrate progress** - This is a beginner's first project; encourage incremental wins

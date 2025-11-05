@@ -4,5 +4,8 @@ Just my (probably bad) attempt at trying to code a webOS without any prior expie
 It does run (locally)
 
 ## KNOWN ISSUES
-- The general theme of this
-- Minimized widgets open when releasing after drag
+- **Window resizing**: Implementation pending
+- **Window minimize/maximize**: Works, but the widget acts a bit finicky (window auto opens after you drag it)
+- **File Manager app**: Not yet created
+- **Settings app**: Not yet created
+- **CSS positioning**: Window content is not fully in the application window.

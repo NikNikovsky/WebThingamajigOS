@@ -7,30 +7,28 @@
 
   function getTime(): string {
     const now = new Date();
-    return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    return now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
 
   let currentTime = getTime();
 
-  // Update time every minute
+  // 1000ms = 1s
   setInterval(() => {
     currentTime = getTime();
-  }, 60000);
+  }, 1000);
 
   function toggleStartMenu() {
     showStartMenu = !showStartMenu;
   }
 
-  // Close menu when clicking outside
+  // Close the menu when not clicking in the menu
   function handleClickOutside(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    // Only close if clicking outside the taskbar-left
     if (!target.closest('.taskbar-left')) {
       showStartMenu = false;
     }
   }
 
-  // Example: Launch Text Editor (when you create the app)
   function launchApp(appName: string) {
     const app = appRegistry.get(appName);
     if (app) {
@@ -66,7 +64,7 @@
           </button>
         {:else}
           <p style="color: #999; padding: 10px; text-align: center; font-size: 12px;">
-            No apps installed yet
+            No apps installed yet or they have not been detected.  
           </p>
         {/each}
       </div>
