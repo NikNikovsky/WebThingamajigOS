@@ -20,12 +20,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -33,12 +34,13 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # For SvelteKit, the build output is usually under "build" or ".svelte-kit/output"
-      # For regular Svelte, it's often "public" or "dist"
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: dist  # Change to "dist" or your build output directory
+          path: ./dist  # Vite builds to dist by default
           
   deploy:
     needs: build
