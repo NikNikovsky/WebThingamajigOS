@@ -42,8 +42,8 @@ WebThingamajigOS is a browser-based operating system built with **Svelte + TypeS
 
 ### Svelte-Specific Patterns
 - **Subscriptions**: Use `store.subscribe(value => state = value)` in `onMount()` or reactive statements
-- **Conditionals**: `{#if} ... {:else} ... {/if}` - nesting/indentation matters (common beginner error)
-- **Loops**: `{#each items as item (item.id)} ... {:else} fallback {/each}` - always include `(key)` for reactivity
+- **Conditionals**: Svelte conditional blocks with nesting/indentation matters (common beginner error)
+- **Loops**: Svelte each blocks with keys - always include `(key)` for reactivity
 - **Global Styles**: Use `:global()` pseudo-selector in `<style>` blocks; avoid `<style global>`
 
 ---
