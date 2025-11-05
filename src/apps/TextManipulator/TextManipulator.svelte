@@ -61,34 +61,29 @@ function openFindReplace() {
 
 <div class="editor">
   
- <div class="menubar" role="menubar" on:click={closeMenus}>
-  <button type="button" class="menu-item" on:click|stopPropagation={() => toggleMenu('file')} aria-haspopup="true" aria-expanded={activeMenu === 'file'}>
+ <div class="menubar" role="menubar">
+  <button class="menu-item" on:click={() => toggleMenu('file')}>
     File
     {#if activeMenu === 'file'}
-      <div class="dropdown" role="menu" on:click|stopPropagation>
-        <button type="button" on:click={newDocument}>New</button>
-        <button type="button" on:click={saveFile}>Save</button>
+        <div class="dropdown">
+        <!-- dropdown content -->
       </div>
     {/if}
   </button>
   
-  <button type="button" class="menu-item" on:click|stopPropagation={() => toggleMenu('edit')} aria-haspopup="true" aria-expanded={activeMenu === 'edit'}>
+  <button class="menu-item" on:click={() => toggleMenu('edit')}>
     Edit
     {#if activeMenu === 'edit'}
-      <div class="dropdown" role="menu" on:click|stopPropagation>
-        <button type="button" on:click={undo}>Undo</button>
-        <button type="button" on:click={redo}>Redo</button>
-        <hr />
-        <button type="button" on:click={selectAll}>Select All</button>
+      <div class="dropdown">
       </div>
     {/if}
   </button>
   
-  <button type="button" class="menu-item" on:click|stopPropagation={() => toggleMenu('view')} aria-haspopup="true" aria-expanded={activeMenu === 'view'}>
+  <button class="menu-item" on:click={() => toggleMenu('view')}>
     View
     {#if activeMenu === 'view'}
-      <div class="dropdown" role="menu" on:click|stopPropagation>
-        <button type="button" on:click={toggleWordWrap}>Toggle Word Wrap</button>
+      <div class="dropdown">
+        <!-- dropdown content -->
       </div>
     {/if}
   </button>
@@ -123,7 +118,14 @@ function openFindReplace() {
 }
 
 .menu-item {
-position: relative;
+  position: relative;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 6px 15px;
+  font-size: 13px;
+  transition: background 0.2s;
 }
 .dropdown {
   position: absolute;
@@ -133,29 +135,6 @@ position: relative;
   border: 1px solid #667eea;
   min-width: 150px;
   z-index: 1000;
-}
-
-.dropdown button {
-  display: block;
-  width: 100%;
-  padding: 8px 15px;
-  background: none;
-  border: none;
-  color: #e0e0e0;
-  cursor: pointer;
-  text-align: left;
-  font-size: 13px;
-}
-
-.dropdown button:hover {
-  background: #667eea;
-  color: white;
-}
-
-.dropdown hr {
-  margin: 4px 0;
-  border: none;
-  border-top: 1px solid #667eea;
 }
 
 .menu-item:hover {
