@@ -1,0 +1,36 @@
+import { writable } from 'svelte/store';
+import type { Window } from '../types/window';
+
+function createWindowStore() {
+  const { subscribe, set, update } = writable<Window[]>([]);
+
+  return {
+    subscribe,
+    openWindow: (window: Window) =>
+      update(windows => [...windows, { ...window, zIndex: windows.length }]),
+    closeWindow: (id: string) =>
+      update(windows => windows.filter(w => w.id !== id)),
+    focusWindow: (id: string) => {
+      update(windows => {
+        const maxZIndex = Math.max(...windows.map(w => w.zIndex), 0);
+        return windows.map(w =>
+          w.id === id ? { ...w, zIndex: maxZIndex + 1, isFocused: true } : { ...w, isFocused: false }
+        );
+      });
+    },
+    moveWindow: (id: string, x: number, y: number) =>
+      update(windows =>
+        windows.map(w =>
+          w.id === id ? { ...w, x, y } : w
+        )
+      ),
+    resizeWindow: (id: string, width: number, height: number) =>
+      update(windows =>
+        windows.map(w =>
+          w.id === id ? { ...w, width, height } : w
+        )
+      ),
+  };
+}
+
+export const windowStore = createWindowStore();
