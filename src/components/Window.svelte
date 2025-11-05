@@ -30,11 +30,11 @@
   }
 
   function minimizeWindow() {
-    // Implement minimize logic
+    // To be eventually completed, maybe, perchance, someday, who knows, maybe not, when I feel like it, etc.
   }
 
   function maximizeWindow() {
-    // Implement maximize logic
+    // To be eventually completed, maybe, perchance, someday, who knows, maybe not, when I feel like it, etc.
   }
 </script>
 
