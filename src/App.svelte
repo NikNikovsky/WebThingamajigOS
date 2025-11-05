@@ -2,10 +2,9 @@
   import { onMount } from 'svelte';
   import { windowStore } from './state/windowStore';
   import { systemStore } from './state/systemStore';
-  import { appRegistry } from './lib/appRegistry';
-  import Window from './components/Window.svelte';
-  // import Taskbar from './components/Taskbar.svelte';  // TODO: Implement this component
-  // import Desktop from './components/Desktop.svelte';  // TODO: Implement this component
+  import Desktop from './components/Desktop.svelte';
+  import WindowManager from './components/WindowManager.svelte';
+  import Taskbar from './components/Taskbar.svelte';
 
   let windows: any[] = [];
   let system: any;
@@ -17,36 +16,16 @@
 </script>
 
 <main>
-  {/* <Desktop /> *}
-  
-  {#each windows as window (window.id)}
-    {#if appRegistry.has(window.appName)}
-      {@const app = appRegistry.get(window.appName)}
-      <Window {window} app={app?.component} />
-    {/if}
-  {/each}
-
-  {/* <Taskbar /> */}
+  <Desktop />
+  <WindowManager />
+  <Taskbar />
 </main>
 
 <style>
-  :global(body) {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    overflow: hidden;
-  }
-
-  :global(*) {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
   main {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 </style>
