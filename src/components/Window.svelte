@@ -12,6 +12,11 @@
   let previousSize = { width: window.width, height: window.height, x: window.x, y: window.y };
   let isMaximized = false;
   let isAnimating = false;
+  let isResizing = false;
+  let resizeStartX = 0;
+  let resizeStartY = 0;
+  let resizeStartWidth = 0;
+  let resizeStartHeight = 0;
 
   function handleMouseDown(e: MouseEvent) {
     isDragging = true;
@@ -50,9 +55,29 @@ function maximizeWindow() {
     isMaximized = true;
   }
 }
+function handleResizeMouseDown(e: MouseEvent) {
+  isResizing = true;
+  resizeStartX = e.clientX;
+  resizeStartY = e.clientY;
+  resizeStartWidth = window.width;
+  resizeStartHeight = window.height;
+  e.preventDefault();
+}
+
+function handleResizeMouseMove(e: MouseEvent) {
+  if (isResizing) {
+    const newWidth = Math.max(300, resizeStartWidth + (e.clientX - resizeStartX));
+    const newHeight = Math.max(150, resizeStartHeight + (e.clientY - resizeStartY));
+    windowStore.resizeWindow(window.id, newWidth, newHeight);
+  }
+}
+
+function handleResizeMouseUp() {
+  isResizing = false;
+}
 </script>
 
-<svelte:window on:mousemove={handleMouseMove} on:mouseup={handleMouseUp} />
+<svelte:window on:mousemove={handleMouseMove} on:mouseup={handleMouseUp} on:mousemove={handleResizeMouseMove} on:mouseup={handleResizeMouseUp} />
 
 {#if !window.isMinimized}
 <div
@@ -81,6 +106,12 @@ function maximizeWindow() {
   <div class="content">
     <svelte:component this={app} />
   </div>
+
+  <div 
+    class="resize-handle"
+    on:mousedown={handleResizeMouseDown}
+    role="presentation"
+  ></div>
 </div>
 {/if}
 
@@ -92,7 +123,21 @@ function maximizeWindow() {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    box-sizing: border-box;
   }
+  .resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  cursor: nwse-resize;
+  background: linear-gradient(135deg, transparent 0%, transparent 50%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.3) 100%);
+}
+
+.resize-handle:hover {
+  background: linear-gradient(135deg, transparent 0%, transparent 50%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.6) 100%);
+}
 
   .titlebar {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -131,7 +176,10 @@ function maximizeWindow() {
 
   .content {
     flex: 1;
-    overflow: auto;
-    padding: 10px;
+    overflow: hidden;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
   }
 </style>

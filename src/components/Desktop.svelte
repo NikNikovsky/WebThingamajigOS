@@ -8,6 +8,7 @@
   let dragStartY = 0;  
   let widgetX = 10;
   let widgetY = 0;
+  let dragged = false;
 
   onMount(() => {
     windowStore.subscribe(w => {
@@ -22,12 +23,24 @@ function handleWidgetMouseDown(e: MouseEvent) {
   isDraggingWidgets = true;
   dragStartX = e.clientX - widgetX;
   dragStartY = e.clientY - widgetY;
+  dragged = false;
 }
 
 function handleWidgetMouseMove(e: MouseEvent) {
   if (isDraggingWidgets) {
+    const dx = Math.abs(e.clientX - (dragStartX + widgetX));
+    const dy = Math.abs(e.clientY - (dragStartY + widgetY));
+    if (dx > 2 || dy > 2) {  
+      dragged = true;
+    }
     widgetX = e.clientX - dragStartX;
     widgetY = e.clientY - dragStartY;
+  }
+}
+
+function handleWidgetClick(windowId: string) {
+  if (!dragged) { 
+    restoreWindow(windowId);
   }
 }
 
@@ -53,7 +66,7 @@ function handleWidgetMouseUp() {
       <button
         class="widget"
         on:mousedown={handleWidgetMouseDown}
-        on:click={() => restoreWindow(window.id)}
+        on:click={() => handleWidgetClick(window.id)}
         title={window.title}
       >
         {window.title} - Minimized
@@ -73,7 +86,7 @@ function handleWidgetMouseUp() {
     align-items: center;
     justify-content: center;
     z-index: 1;
-    pointer-events: none; /* Enable clicking */
+    pointer-events: none; /* Enable clicking, kinda necessary in a GUI */
   }
 
   .desktop-title {

@@ -4,8 +4,6 @@ Just my (probably bad) attempt at trying to code a tiny browser-only webOS witho
 It does run (locally)
 
 ## KNOWN ISSUES
-- **Window resizing**: Implementation pending
-- **Window minimize/maximize**: Works, but the widget acts a bit finicky (window auto opens after you drag it)
-- **File Manager app**: Not yet created
+- **Empty dropdowns**: As the name suggests (Text Manipulator)
+- **File Manager app**: Empty app with nothing in it
 - **Settings app**: Not yet created
-- **CSS positioning**: Window content is not fully in the application window.

@@ -2,6 +2,7 @@
   import { systemStore } from '../state/systemStore';
   import { windowStore } from '../state/windowStore';
   import { appRegistry } from '../lib/appRegistry';
+  import { onMount } from 'svelte';
 
   let showStartMenu = false;
 
@@ -11,11 +12,20 @@
   }
 
   let currentTime = getTime();
+  let timerID: number;
 
   // 1000ms = 1s
-  setInterval(() => {
-    currentTime = getTime();
-  }, 1000);
+onMount(() => {
+    // Update time every single second
+    timerID = window.setInterval(() => {
+      currentTime = getTime();
+    }, 1000);
+
+    // cleanup
+    return () => {
+      clearInterval(timerID);
+    };
+  });
 
   function toggleStartMenu() {
     showStartMenu = !showStartMenu;
