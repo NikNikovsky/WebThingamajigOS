@@ -7,5 +7,11 @@ It might around 2 minutes for the website to be accessible after a push, this is
 
 ## KNOWN ISSUES
 - **Empty dropdowns**: As the name suggests (Text Manipulator)
+
+## Planned features
 - **File Manager app**: Empty app with nothing in it
 - **Settings app**: Not yet created
+- **Multi user functionality**: Not created
+- **User Storage**: Not created
+- **Music/Video Player**: Not created
+- **Custom icons, wallpapers**: Planned, not made
