@@ -61,43 +61,52 @@ function openFindReplace() {
 
 <div class="editor">
   
- <div class="menubar" role="menubar">
-  <button class="menu-item" on:click={() => toggleMenu('file')}>
-    File
+  <div class="menubar-container">
+    <div class="menubar" role="menubar">
+      <button class="menu-item" on:click={() => toggleMenu('file')} aria-expanded={activeMenu === 'file'}>
+        File
+      </button>
+      
+      <button class="menu-item" on:click={() => toggleMenu('edit')} aria-expanded={activeMenu === 'edit'}>
+        Edit
+      </button>
+      
+      <button class="menu-item" on:click={() => toggleMenu('view')} aria-expanded={activeMenu === 'view'}>
+        View
+      </button>
+    </div>
+
     {#if activeMenu === 'file'}
-        <div class="dropdown">
-        <!-- dropdown content -->
+      <div class="dropdown" data-menu="file">
+        <button class="dropdown-item" on:click={newDocument}>New</button>
+        <button class="dropdown-item" on:click={saveFile}>Save</button>
+        <hr>
+        <button class="dropdown-item" on:click={closeMenus}>Close Menu</button>
       </div>
     {/if}
-  </button>
-  
-  <button class="menu-item" on:click={() => toggleMenu('edit')}>
-    Edit
+
     {#if activeMenu === 'edit'}
-      <div class="dropdown">
+      <div class="dropdown" data-menu="edit">
+        <button class="dropdown-item" on:click={undo}>Undo</button>
+        <button class="dropdown-item" on:click={redo}>Redo</button>
+        <hr>
+        <button class="dropdown-item" on:click={selectAll}>Select All</button>
+        <button class="dropdown-item" on:click={openFindReplace}>Find & Replace</button>
       </div>
     {/if}
-  </button>
-  
-  <button class="menu-item" on:click={() => toggleMenu('view')}>
-    View
+
     {#if activeMenu === 'view'}
-      <div class="dropdown">
-        <!-- dropdown content -->
+      <div class="dropdown" data-menu="view">
+        <button class="dropdown-item" on:click={toggleWordWrap}>Toggle Word Wrap</button>
       </div>
     {/if}
-  </button>
-</div>
+  </div>
 
 {#if showFindReplace}
   <div class="find-replace-modal">
     <button on:click={openFindReplace}>Find & Replace</button>
   </div>
 {/if}
-  
-  <div class="toolbar">
-    <button on:click={save}>Write Out</button>
-  </div>
   
   <textarea bind:value={$content} placeholder="Just do it..."></textarea>
 </div>
@@ -117,6 +126,10 @@ function openFindReplace() {
   height: 32px;
 }
 
+.menubar-container {
+  position: relative;
+}
+
 .menu-item {
   position: relative;
   background: none;
@@ -127,44 +140,56 @@ function openFindReplace() {
   font-size: 13px;
   transition: background 0.2s;
 }
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 8px 15px;
+  background: none;
+  border: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+
+.dropdown-item:hover {
+  background: rgba(102, 126, 234, 0.6);
+  color: white;
+}
+
+.dropdown hr {
+  margin: 4px 0;
+  border: none;
+  border-top: 1px solid rgba(102, 126, 234, 0.4);
+}
+
 .dropdown {
   position: absolute;
-  top: 100%;
+  top: 32px;
   left: 0;
-  background: #2d2d44;
-  border: 1px solid #667eea;
+  background: rgba(45, 45, 68, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(102, 126, 234, 0.5);
   min-width: 150px;
   z-index: 1000;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown[data-menu="edit"] {
+  left: 50px;
+}
+
+.dropdown[data-menu="view"] {
+  left: 100px;
 }
 
 .menu-item:hover {
   background: #667eea;
   color: white;
-}
-
-.toolbar {
-  padding: 10px 15px;
-  background: #1a1a1e;
-  border-bottom: 1px solid #2d2d44;
-  display: flex;
-  gap: 8px;
-}
-
-.toolbar button {
-  padding: 6px 12px;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-
-.toolbar button:hover {
-  background: #764ba2;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 textarea {

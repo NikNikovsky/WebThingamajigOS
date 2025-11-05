@@ -3,50 +3,73 @@
   import { onMount } from 'svelte';
   
   let windows: any[] = [];
-  let isDraggingWidgets = false;
+  let widgetPositions: { [windowId: string]: { x: number; y: number } } = {};
+  let draggingWidgetId: string | null = null;
   let dragStartX = 0;
-  let dragStartY = 0;  
-  let widgetX = 10;
-  let widgetY = 0;
+  let dragStartY = 0;
   let dragged = false;
 
   onMount(() => {
     windowStore.subscribe(w => {
       windows = w;
+      // Initialize positions for newly minimized from the main window's position
+      windows.forEach((win) => {
+        if (win.isMinimized && !widgetPositions[win.id]) {
+          // Position widget at the window's current location
+          widgetPositions[win.id] = {
+            x: win.x,
+            y: win.y
+          };
+        }
+        // Clean up positions for restored windows
+        if (!win.isMinimized && widgetPositions[win.id]) {
+          delete widgetPositions[win.id];
+        }
+      });
     });
   });
 
-function restoreWindow(windowId: string) {
+  function restoreWindow(windowId: string) {
+    // Move window to the widget's position
+    const pos = widgetPositions[windowId];
+    if (pos) {
+      windowStore.moveWindow(windowId, pos.x, pos.y);
+    }
     windowStore.restoreWindow(windowId);
   }
-function handleWidgetMouseDown(e: MouseEvent) {
-  isDraggingWidgets = true;
-  dragStartX = e.clientX - widgetX;
-  dragStartY = e.clientY - widgetY;
-  dragged = false;
-}
 
-function handleWidgetMouseMove(e: MouseEvent) {
-  if (isDraggingWidgets) {
-    const dx = Math.abs(e.clientX - (dragStartX + widgetX));
-    const dy = Math.abs(e.clientY - (dragStartY + widgetY));
-    if (dx > 2 || dy > 2) {  
-      dragged = true;
+  function handleWidgetMouseDown(windowId: string, e: MouseEvent) {
+    draggingWidgetId = windowId;
+    const pos = widgetPositions[windowId];
+    dragStartX = e.clientX - pos.x;
+    dragStartY = e.clientY - pos.y;
+    dragged = false;
+  }
+
+  function handleWidgetMouseMove(e: MouseEvent) {
+    if (draggingWidgetId && widgetPositions[draggingWidgetId]) {
+      const pos = widgetPositions[draggingWidgetId];
+      const dx = Math.abs(e.clientX - (dragStartX + pos.x));
+      const dy = Math.abs(e.clientY - (dragStartY + pos.y));
+      if (dx > 2 || dy > 2) {
+        dragged = true;
+      }
+      pos.x = e.clientX - dragStartX;
+      pos.y = e.clientY - dragStartY;
+      // Force reactivity by reassigning the object
+      widgetPositions = widgetPositions;
     }
-    widgetX = e.clientX - dragStartX;
-    widgetY = e.clientY - dragStartY;
   }
-}
 
-function handleWidgetClick(windowId: string) {
-  if (!dragged) { 
-    restoreWindow(windowId);
+  function handleWidgetClick(windowId: string) {
+    if (!dragged) {
+      restoreWindow(windowId);
+    }
   }
-}
 
-function handleWidgetMouseUp() {
-  isDraggingWidgets = false;
-}
+  function handleWidgetMouseUp() {
+    draggingWidgetId = null;
+  }
 </script>
 
 <svelte:window on:mousemove={handleWidgetMouseMove} on:mouseup={handleWidgetMouseUp} />
@@ -57,22 +80,23 @@ function handleWidgetMouseUp() {
   <p class="desktop-subtitle">Fatuus Erratum</p>
   <p class="desktop-subsubtitle">Made by an idiot (Me, Nik)</p>
 </div>
+
+{#each windows.filter(w => w.isMinimized) as window (window.id)}
   <div 
-    class="minimized-widgets"
-    style="left: {widgetX}px; top: {widgetY}px;"
-    
+    class="minimized-widget"
+    data-window-id={window.id}
+    style="left: {widgetPositions[window.id]?.x ?? 10}px; top: {widgetPositions[window.id]?.y ?? 10}px;"
   >
-    {#each windows.filter(w => w.isMinimized) as window (window.id)}
-      <button
-        class="widget"
-        on:mousedown={handleWidgetMouseDown}
-        on:click={() => handleWidgetClick(window.id)}
-        title={window.title}
-      >
-        {window.title} - Minimized
-      </button>
-    {/each}
+    <button
+      class="widget"
+      on:mousedown={(e) => handleWidgetMouseDown(window.id, e)}
+      on:click={() => handleWidgetClick(window.id)}
+      title={window.title}
+    >
+      {window.title} - Minimized
+    </button>
   </div>
+{/each}
 <style>
   .desktop {
     position: fixed;
@@ -107,18 +131,13 @@ function handleWidgetMouseUp() {
     text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
   }
 
-  .minimized-widgets {
+  .minimized-widget {
     position: fixed;
-    bottom: auto;
-    left: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
     z-index: 1001;
-    pointer-events: auto; /* Allow clicking on widgets */
+    pointer-events: auto;
   }
 
-.widget {
+  .widget {
     padding: 8px 12px;
     height: 40px;
     background: rgba(102, 126, 234, 0.3);
@@ -132,7 +151,7 @@ function handleWidgetMouseUp() {
     justify-content: center;
     transition: background 0.2s, transform 0.2s;
     white-space: nowrap;
-}
+  }
 
   .widget:hover {
     background: rgba(102, 126, 234, 0.5);

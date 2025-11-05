@@ -6,7 +6,7 @@ It does run, try it [here](https://niknikovsky.github.io/fatuus/)
 It might around 2 minutes for the website to be accessible after a push, this is standard GitHub behavior
 
 ## KNOWN ISSUES
-- **Empty dropdowns**: As the name suggests (Text Manipulator)
+None, if you find any, let me know.
 
 ## Planned features
 - **File Manager app**: Empty app with nothing in it
@@ -15,3 +15,4 @@ It might around 2 minutes for the website to be accessible after a push, this is
 - **User Storage**: Not created
 - **Music/Video Player**: Not created
 - **Custom icons, wallpapers**: Planned, not made
+- **Task Manager**: Planned
