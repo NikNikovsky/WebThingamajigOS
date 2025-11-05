@@ -57,7 +57,7 @@ function maximizeWindow() {
 
 {#if !isMinimized}
 <div
-  class="window class:minimizing={isAnimating}"
+  class="window"
   style="
     left: {window.x}px;
     top: {window.y}px;
@@ -68,6 +68,7 @@ function maximizeWindow() {
   on:mousedown={() => windowStore.focusWindow(window.id)}
   on:focus={() => {}}
   role="presentation"
+  transition:scale={{ duration: 300 }}
 >
   <div class="titlebar" on:mousedown={handleMouseDown} role="presentation">
     <span>{window.title}</span>
@@ -92,29 +93,6 @@ function maximizeWindow() {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-  }
-   @keyframes minimizeOut {
-    from {
-      opacity: 1;
-      transform: scale(1);
-    }
-    to {
-      opacity: 0;
-      transform: scale(0.8);
-    }
-  }
-  
-  .window {
-    position: fixed;
-    border-radius: 6px;
-    box-shadow: inset 0 0 0 1px rgba(102, 126, 234, 0.3);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  
-  .window.minimizing {
-    animation: minimizeOut 0.3s ease-out forwards;
   }
 
   .titlebar {
