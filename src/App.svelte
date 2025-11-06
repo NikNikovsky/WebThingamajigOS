@@ -16,7 +16,7 @@
   });
 </script>
 
-<main>
+<main style="--accent-color: {system?.accentColor || '#667eea'}">
   <Desktop />
   <WindowManager />
   <Taskbar />
@@ -28,6 +28,5 @@
     height: calc(100% - 50px);
     display: flex;
     flex-direction: column;
-    --accent-color: var(--accentColor, #667eea);
   }
 </style>

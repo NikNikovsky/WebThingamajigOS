@@ -2,6 +2,7 @@
   import type { Window as WindowType } from '../types/window';
   import { windowStore } from '../state/windowStore';
   import { scale, fade } from 'svelte/transition';
+  import { systemStore } from '../state/systemStore';
   
   export let window: WindowType;
   export let app: any; // The app component
@@ -18,6 +19,8 @@
   let resizeStartWidth = 0;
   let resizeStartHeight = 0;
   let isClosing = false;
+  let system: any;
+  systemStore.subscribe(s => system = s);
 
   function handleMouseDown(e: MouseEvent) {
     isDragging = true;
@@ -96,7 +99,7 @@ function handleResizeMouseUp() {
   role="presentation"
   transition:scale={{ duration: 300 }}
 >
-  <div class="titlebar" on:mousedown={handleMouseDown} role="presentation">
+  <div class="titlebar" style="background: {system?.wallpaperGradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}" on:mousedown={handleMouseDown} role="presentation">
     <span>{window.title}</span>
     <div class="buttons">
       <button on:click={minimizeWindow} title="Minimize">−</button>
@@ -142,7 +145,6 @@ function handleResizeMouseUp() {
 }
 
   .titlebar {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     padding: 10px 15px;
     cursor: move;
