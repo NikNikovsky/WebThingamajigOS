@@ -40,7 +40,9 @@
 
 function closeWindow() {
     isClosing = true;
-    windowStore.closeWindow(window.id);
+     setTimeout(() => {
+        windowStore.closeWindow(window.id);
+    }, 300);
 }
 
 function minimizeWindow() {
@@ -87,6 +89,7 @@ function handleResizeMouseUp() {
 {#if !window.isMinimized}
 <div
   class="window"
+  class:closing={isClosing}
   style="
     left: {window.x}px;
     top: {window.y}px;
@@ -101,6 +104,7 @@ function handleResizeMouseUp() {
 >
   <div class="titlebar" style="background: {system?.wallpaperGradient || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}" on:mousedown={handleMouseDown} role="presentation">
     <span>{window.title}</span>
+    <div class="buttons-spacer"></div>
     <div class="buttons">
       <button on:click={minimizeWindow} title="Minimize">−</button>
       <button on:click={maximizeWindow} title="Maximize">□</button>
@@ -144,19 +148,43 @@ function handleResizeMouseUp() {
   background: linear-gradient(135deg, transparent 0%, transparent 50%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.6) 100%);
 }
 
-  .titlebar {
-    color: white;
-    padding: 10px 15px;
-    cursor: move;
-    user-select: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+.titlebar {
+  color: white;
+  padding: 10px 15px;
+  cursor: move;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.titlebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+.titlebar > * {
+  position: relative;
+  z-index: 1;
+}
 
   .buttons {
     display: flex;
-    gap: 8px;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    align-items: center;
+  }
+
+  .buttons-spacer {
+    flex: 1;
   }
 
   .buttons button {
@@ -164,26 +192,29 @@ function handleResizeMouseUp() {
     border: none;
     color: white;
     cursor: pointer;
-    font-size: 18px;
-    width: 30px;
-    height: 30px;
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 3px;
     transition: background 0.2s;
+    line-height: 1;
+    font-weight: bold;
   }
 
   .buttons button:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.3);
   }
 
-  .content {
-    flex: 1;
-    overflow: hidden;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-  }
+.content {
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: rgba(15, 15, 30, 0.65); 
+}
 </style>

@@ -2,6 +2,7 @@
   import { windowStore } from '../state/windowStore';
   import { appRegistry } from '../lib/appRegistry';
   import Window from './Window.svelte';
+  import {scale} from 'svelte/transition';
 
   // Subscribe to window store to reactively update
   let windows: any[] = [];
@@ -10,17 +11,14 @@
   });
 </script>
 
-<!-- 
-  This component manages and displays all open windows.
-  It renders each window from the windowStore and handles the z-index stacking.
--->
-
 <div class="window-manager">
   {#each windows as window (window.id)}
-    {#if appRegistry.has(window.appName)}
-      {@const app = appRegistry.get(window.appName)}
-      <Window {window} app={app?.component} />
-    {/if}
+    <div transition:scale={{ duration: 2000 }}>
+      {#if appRegistry.has(window.appName)}
+        {@const app = appRegistry.get(window.appName)}
+        <Window {window} app={app?.component} />
+      {/if}
+    </div>
   {/each}
 </div>
 
@@ -32,10 +30,10 @@
     width: 100%;
     height: 100%;
     z-index: 100;
-    pointer-events: none; /* Allow clicks to pass through to desktop */
+    pointer-events: none; 
   }
 
   :global(.window-manager > *) {
-    pointer-events: auto; /* But windows themselves should be clickable */
+    pointer-events: auto;
   }
 </style>
