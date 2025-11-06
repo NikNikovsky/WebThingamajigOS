@@ -147,8 +147,8 @@
   .widget {
     padding: 8px 12px;
     height: 40px;
-    background: rgba(102, 126, 234, 0.3);
-    border: 1px solid rgba(102, 126, 234, 0.5);
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--accent-color);
     border-radius: 6px;
     color: white;
     font-size: 12px;
@@ -161,7 +161,7 @@
   }
 
   .widget:hover {
-    background: rgba(102, 126, 234, 0.5);
+    background: var(--accent-color);
     transform: scale(1.1);
   }
 </style>

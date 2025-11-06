@@ -115,13 +115,13 @@ function openFindReplace() {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #1a1a1e;
+ 
   color: #e0e0e0;
 }
 
 .menubar {
-  background: #2d2d44;
-  border-bottom: 1px solid #667eea;
+  
+  border-bottom: 1px solid var(--accent-color);
   display: flex;
   height: 32px;
 }
@@ -155,28 +155,27 @@ function openFindReplace() {
 }
 
 .dropdown-item:hover {
-  background: rgba(102, 126, 234, 0.6);
+  background: var(--accent-color);
   color: white;
 }
 
 .dropdown hr {
   margin: 4px 0;
   border: none;
-  border-top: 1px solid rgba(102, 126, 234, 0.4);
+  border-top: 1px solid var(--accent-color);
 }
 
 .dropdown {
   position: absolute;
   top: 32px;
   left: 0;
-  background: rgba(45, 45, 68, 0.8);
+  background: var(--accent-color);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(102, 126, 234, 0.5);
+  border: 1px solid var(--accent-color);
   min-width: 150px;
   z-index: 1000;
   border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .dropdown[data-menu="edit"] {
@@ -188,7 +187,7 @@ function openFindReplace() {
 }
 
 .menu-item:hover {
-  background: #667eea;
+  background: var(--accent-color);
   color: white;
 }
 
@@ -198,8 +197,7 @@ textarea {
   padding: 15px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   font-size: 14px;
-  background: #0f0f1e;
-  color: #e0e0e0;
+  color: var(--accent-color);
   resize: none;
   outline: none;
 }

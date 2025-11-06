@@ -143,7 +143,7 @@ onMount(() => {
     position: absolute;
     bottom: 60px;
     left: 0;
-    background: rgba(20, 20, 30, 0.95);
+    background: rgba(0, 0, 0, 0.75);
     border: 1px solid var(--accent-color);
     border-radius: 6px;
     min-width: 200px;
@@ -178,7 +178,6 @@ onMount(() => {
 
   .app-button:hover {
     background: var(--accent-color);
-    opacity: 0.2;
   }
 
   .time {

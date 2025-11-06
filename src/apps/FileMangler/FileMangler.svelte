@@ -111,7 +111,6 @@ function loadFiles() {
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: #0f0f1e;
     color: #e0e0e0;
   }
 
@@ -120,7 +119,6 @@ function loadFiles() {
     align-items: center;
     gap: 15px;
     padding: 12px;
-    background: #1a1a2e;
     border-bottom: 1px solid #2d2d44;
   }
 
@@ -132,8 +130,7 @@ function loadFiles() {
   .navigation-buttons button,
   .new-folder-btn {
     padding: 6px 10px;
-    background: rgba(102, 126, 234, 0.2);
-    border: 1px solid rgba(102, 126, 234, 0.4);
+    border: 1px solid var(--accent-color);
     border-radius: 4px;
     color: #e0e0e0;
     cursor: pointer;
@@ -142,7 +139,7 @@ function loadFiles() {
 
   .navigation-buttons button:hover,
   .new-folder-btn:hover {
-    background: rgba(102, 126, 234, 0.4);
+    background: var(--accent-color);
   }
 
   .address-bar {
@@ -160,8 +157,7 @@ function loadFiles() {
   .path-input {
     flex: 1;
     padding: 6px 8px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid #2d2d44;
+    border: 1px solid var(--accent-color);
     border-radius: 4px;
     color: #e0e0e0;
   }
@@ -176,8 +172,8 @@ function loadFiles() {
     grid-template-columns: 30px 1fr 100px 80px 120px;
     gap: 12px;
     padding: 12px;
-    background: #1a1a2e;
-    border-bottom: 1px solid #2d2d44;
+   
+    border-bottom: 1px solid var(--accent-color);
     font-weight: 600;
     font-size: 12px;
     color: #a0a0a0;
@@ -196,7 +192,7 @@ function loadFiles() {
   gap: 12px;
   padding: 12px;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--accent-color);
   cursor: pointer;
   transition: background 0.2s;
   background: none;
@@ -208,7 +204,7 @@ function loadFiles() {
 }
 
   .table-row:hover {
-    background: rgba(102, 126, 234, 0.1);
+    background: var(--accent-color);
   }
 
   .col-icon {
