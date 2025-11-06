@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { windowStore } from './state/windowStore';
-  import { systemStore } from './state/systemStore';
+  import { generateRandomGradient, systemStore } from './state/systemStore';
   import Desktop from './components/Desktop.svelte';
   import WindowManager from './components/WindowManager.svelte';
   import Taskbar from './components/Taskbar.svelte';
@@ -12,6 +12,7 @@
   onMount(() => {
     windowStore.subscribe(w => windows = w);
     systemStore.subscribe(s => system = s);
+    generateRandomGradient();
   });
 </script>
 
@@ -27,5 +28,6 @@
     height: calc(100% - 50px);
     display: flex;
     flex-direction: column;
+    --accent-color: var(--accentColor, #667eea);
   }
 </style>

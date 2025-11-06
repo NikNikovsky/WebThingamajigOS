@@ -12,6 +12,7 @@
 
   onMount(() => {
     startTime = Date.now();
+    uptime = getUptime();
     
     // Subscribe to ~~clabretro~~ windowStore
     windowStore.subscribe(w => {

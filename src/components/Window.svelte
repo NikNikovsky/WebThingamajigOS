@@ -17,6 +17,7 @@
   let resizeStartY = 0;
   let resizeStartWidth = 0;
   let resizeStartHeight = 0;
+  let isClosing = false;
 
   function handleMouseDown(e: MouseEvent) {
     isDragging = true;
@@ -35,6 +36,7 @@
 }
 
 function closeWindow() {
+    isClosing = true;
     windowStore.closeWindow(window.id);
 }
 

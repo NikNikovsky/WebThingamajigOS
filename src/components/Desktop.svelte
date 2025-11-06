@@ -1,6 +1,7 @@
 <script lang="ts">
   import { windowStore } from '../state/windowStore';
   import { onMount } from 'svelte';
+  import {systemStore} from '../state/systemStore';
   
   let windows: any[] = [];
   let widgetPositions: { [windowId: string]: { x: number; y: number } } = {};
@@ -8,8 +9,15 @@
   let dragStartX = 0;
   let dragStartY = 0;
   let dragged = false;
+  let wallpaper = '';
 
   onMount(() => {
+    // Subscribe to systemStore for wallpaper
+    systemStore.subscribe(s => {
+      wallpaper = s.wallpaperGradient;
+    });
+
+    // Subscribe to windowStore for windows
     windowStore.subscribe(w => {
       windows = w;
       // Initialize positions for newly minimized from the main window's position
@@ -75,7 +83,7 @@
 <svelte:window on:mousemove={handleWidgetMouseMove} on:mouseup={handleWidgetMouseUp} />
 
 // Originally named WebThingamajigOS
-<div class="desktop">
+<div class="desktop" style="background: {wallpaper}">
   <h1 class="desktop-title">Fatuus</h1>
   <p class="desktop-subtitle">Fatuus Erratum</p>
   <p class="desktop-subsubtitle">Made by an idiot (Me, Nik)</p>
@@ -104,7 +112,6 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
