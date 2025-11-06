@@ -113,7 +113,7 @@ function handleResizeMouseUp() {
   </div>
 
   <div class="content">
-    <svelte:component this={app} />
+    <svelte:component this={app} windowId={window.id} />
   </div>
 
   <div 

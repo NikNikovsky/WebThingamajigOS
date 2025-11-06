@@ -4,6 +4,7 @@ import FileMangler from '../apps/FileMangler/FileMangler.svelte';
 import Jukebox from '../apps/Jukebox/Jukebox.svelte';
 import TasqueMangler from '../apps/TasqueMangler/TasqueMangler.svelte';
 import Settings from '../apps/Settings/Settings.svelte';
+import Ultrakill from '../apps/Ultrakill/Ultrakill.svelte';
 
 export const appRegistry: Map<string, AppMetadata> = new Map([
    ['TextManipulator', {
@@ -40,6 +41,13 @@ export const appRegistry: Map<string, AppMetadata> = new Map([
     icon: 'cog',
     component: Settings,
     defaultWindow: { width: 800, height: 600 }
+   }],
+   ['Ultrakill', {
+    name: 'Ultrakill',
+    title: 'Ultrakill',
+    icon: '⚡',
+    component: Ultrakill,
+    defaultWindow: { width: 600, height: 500 }
    }]
 ]);
 

@@ -42,6 +42,12 @@ function createWindowStore() {
           w.id === id ? { ...w, width, height } : w
         )
       ),
+    updateWindowTitle: (id: string, title: string) =>
+      update(windows =>
+        windows.map(w =>
+          w.id === id ? { ...w, title } : w
+        )
+      ),
   };
 }
 

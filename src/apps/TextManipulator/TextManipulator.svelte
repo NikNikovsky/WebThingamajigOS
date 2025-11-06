@@ -1,5 +1,9 @@
 <script lang="ts">
   import { writable } from 'svelte/store';
+  import { fileDialogStore, openFileDialog, setCurrentlyOpen } from '../../state/fileDialogStore';
+  import { windowStore } from '../../state/windowStore';
+  
+  export let windowId: string;
   
   let content = writable('');
   let fileName = 'Titled.txt';
@@ -20,10 +24,23 @@ function newDocument() {
   activeMenu = null;
 }
 
+fileDialogStore.subscribe(dialog => {
+  if (dialog.selectedFile && dialog.requestedBy === 'TextManipulator') {
+    content.set(dialog.selectedFile.content);
+    fileName = dialog.selectedFile.name;
+    setCurrentlyOpen(dialog.selectedFile);
+    windowStore.updateWindowTitle(windowId, `Text Changer - ${fileName}`);
+  }
+});
+
 // Saves, duh!
 function saveFile() {
   save();
   activeMenu = null;
+}
+
+function openFile() {
+  openFileDialog('TextManipulator');
 }
 
 function selectAll() {

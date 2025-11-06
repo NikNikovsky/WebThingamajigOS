@@ -2,6 +2,7 @@
   import { windowStore } from '../state/windowStore';
   import { onMount } from 'svelte';
   import {systemStore} from '../state/systemStore';
+  import { appRegistry } from '../lib/appRegistry';
   
   let windows: any[] = [];
   let widgetPositions: { [windowId: string]: { x: number; y: number } } = {};
@@ -10,6 +11,25 @@
   let dragStartY = 0;
   let dragged = false;
   let wallpaper = '';
+
+  function launchUltrakill() {
+    const app = appRegistry.get('Ultrakill');
+    if (app) {
+      windowStore.openWindow({
+        id: `Ultrakill-${Date.now()}`,
+        title: app.title,
+        appName: 'Ultrakill',
+        x: Math.random() * 200 + 100,
+        y: Math.random() * 200 + 100,
+        width: app.defaultWindow.width,
+        height: app.defaultWindow.height,
+        zIndex: 100,
+        isMinimized: false,
+        isMaximized: false,
+        isFocused: true,
+      });
+    }
+  }
 
   onMount(() => {
     // Subscribe to systemStore for wallpaper
@@ -105,6 +125,7 @@
     </button>
   </div>
 {/each}
+
 <style>
   .desktop {
     position: fixed;

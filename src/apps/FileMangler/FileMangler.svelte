@@ -1,12 +1,55 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { getAppForFile } from '../../lib/typeAssociation';
+    import { windowStore } from '../../state/windowStore';
+    import { appRegistry } from '../../lib/appRegistry';
+    import { fileDialogStore } from '../../state/fileDialogStore';
     
     let files: { id: number; name: string; type: string; size: string; modified: string }[] = [];
     let currentPath: string = '/';
     
 onMount(() => {
-  loadFiles();  // Load initial files when component mounts
+  loadFiles();  // Load initial files
 });
+
+// Mock file contents
+const mockFileContents: { [key: string]: string } = {
+  '/how to build a nuclear reactor.txt': `# How to Build a Nuclear Reactor
+
+## WARNING: This is satirical and fictional!
+
+1. First, obtain some uranium... just kidding, don't do that.
+2. This is a joke file created for demonstration purposes.
+3. Nuclear science is actually super complex and requires years of study.
+4. Please don't try this at home!
+
+## Actual Nuclear Facts:
+- Nuclear reactions power about 10% of the world's electricity
+- Modern nuclear plants have multiple safety systems
+- Nuclear waste is handled very carefully
+- Proper training and licensing is absolutely required
+
+Stay safe! 😄`,
+  
+  '/Documents/User Guide.pdf': `# User Guide
+
+Welcome to Fatuus OS!
+
+This is a mock PDF file displayed as text.
+In a real implementation, you'd need a PDF viewer.
+
+## Getting Started
+- Use the File Manager to browse files
+- Double-click files to open them
+- Use the Text Editor for text files
+- Use the Jukebox for audio files
+
+Have fun exploring!`,
+
+  '/Documents/Evidence that Spy had contact with Scout\'s mother.zip': `[This is a zip file - cannot be displayed as text]
+Mock content for a zipped archive.`,
+};
+
 const mockFileSystem: { [key: string]: typeof files } = {
   '/': [
     { id: 1, name: 'Documents', type: 'folder', size: '-', modified: '2025-11-01' },
@@ -52,6 +95,47 @@ function refresh() {
 function loadFiles() {
   files = mockFileSystem[currentPath] || [];
 }
+function handleFileDoubleClick(file: { id: number; name: string; type: string; size: string; modified: string }) {
+  if (file.type === 'folder') {
+    navigateToFolder(file.name);
+  } else {
+    // Try to open with associated app
+    const appName = getAppForFile(file.name);
+    if (appName && appRegistry.has(appName)) {
+      const app = appRegistry.get(appName);
+      
+      // Get file content from mock contents
+      const filePath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
+      const content = mockFileContents[filePath] || '[File content not found]';
+      
+      // Set file in dialog store so the app can receive it
+      fileDialogStore.update(state => ({
+        ...state,
+        selectedFile: {
+          name: file.name,
+          path: filePath,
+          content: content,
+          type: file.type,
+          size: file.size
+        }
+      }));
+      
+      windowStore.openWindow({
+        id: `${appName}-${Date.now()}`,
+        title: app?.title || appName,
+        appName: appName,
+        x: Math.random() * 200 + 100,
+        y: Math.random() * 200 + 100,
+        width: app?.defaultWindow.width || 800,
+        height: app?.defaultWindow.height || 600,
+        zIndex: 100,
+        isMinimized: false,
+        isMaximized: false,
+        isFocused: true,
+      });
+    }
+  }
+}
 </script>
 
 <div class="file-manager">
@@ -85,7 +169,7 @@ function loadFiles() {
       {#each files as file (file.id)}
         <button 
           class="table-row" 
-          on:dblclick={() => file.type === 'folder' && navigateToFolder(file.name)}
+          on:dblclick={() => handleFileDoubleClick(file)}
           type="button"
         >
           <div class="col-icon">
