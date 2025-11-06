@@ -14,10 +14,13 @@
   let isMaximized = false;
   let isAnimating = false;
   let isResizing = false;
+  let resizeType = ''; // 'n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'
   let resizeStartX = 0;
   let resizeStartY = 0;
   let resizeStartWidth = 0;
   let resizeStartHeight = 0;
+  let resizeStartLeft = 0;
+  let resizeStartTop = 0;
   let isClosing = false;
   let system: any;
   systemStore.subscribe(s => system = s);
@@ -62,25 +65,68 @@ function maximizeWindow() {
     isMaximized = true;
   }
 }
-function handleResizeMouseDown(e: MouseEvent) {
+
+function handleResizeMouseDown(e: MouseEvent, type: string) {
   isResizing = true;
+  resizeType = type;
   resizeStartX = e.clientX;
   resizeStartY = e.clientY;
   resizeStartWidth = window.width;
   resizeStartHeight = window.height;
+  resizeStartLeft = window.x;
+  resizeStartTop = window.y;
   e.preventDefault();
 }
 
 function handleResizeMouseMove(e: MouseEvent) {
   if (isResizing) {
-    const newWidth = Math.max(300, resizeStartWidth + (e.clientX - resizeStartX));
-    const newHeight = Math.max(150, resizeStartHeight + (e.clientY - resizeStartY));
-    windowStore.resizeWindow(window.id, newWidth, newHeight);
+    const deltaX = e.clientX - resizeStartX;
+    const deltaY = e.clientY - resizeStartY;
+    
+    let newWidth = resizeStartWidth;
+    let newHeight = resizeStartHeight;
+    let newX = resizeStartLeft;
+    let newY = resizeStartTop;
+
+    // Handle horizontal resize
+    if (resizeType.includes('w')) {
+      newX = resizeStartLeft + deltaX;
+      newWidth = resizeStartWidth - deltaX;
+    } else if (resizeType.includes('e')) {
+      newWidth = resizeStartWidth + deltaX;
+    }
+
+    // Handle vertical resize
+    if (resizeType.includes('n')) {
+      newY = resizeStartTop + deltaY;
+      newHeight = resizeStartHeight - deltaY;
+    } else if (resizeType.includes('s')) {
+      newHeight = resizeStartHeight + deltaY;
+    }
+
+    // Enforce minimum size
+    if (newWidth < 300) {
+      newWidth = 300;
+      if (resizeType.includes('w')) newX = resizeStartLeft + (resizeStartWidth - 300);
+    }
+    if (newHeight < 150) {
+      newHeight = 150;
+      if (resizeType.includes('n')) newY = resizeStartTop + (resizeStartHeight - 150);
+    }
+
+    // Apply changes
+    if (newX !== window.x || newY !== window.y) {
+      windowStore.moveWindow(window.id, newX, newY);
+    }
+    if (newWidth !== window.width || newHeight !== window.height) {
+      windowStore.resizeWindow(window.id, newWidth, newHeight);
+    }
   }
 }
 
 function handleResizeMouseUp() {
   isResizing = false;
+  resizeType = '';
 }
 </script>
 
@@ -116,11 +162,18 @@ function handleResizeMouseUp() {
     <svelte:component this={app} windowId={window.id} />
   </div>
 
-  <div 
-    class="resize-handle"
-    on:mousedown={handleResizeMouseDown}
-    role="presentation"
-  ></div>
+  <!-- Resize handles for all edges and corners -->
+  <!-- Corners -->
+  <div class="resize-handle resize-nw" on:mousedown={(e) => handleResizeMouseDown(e, 'nw')} role="presentation"></div>
+  <div class="resize-handle resize-ne" on:mousedown={(e) => handleResizeMouseDown(e, 'ne')} role="presentation"></div>
+  <div class="resize-handle resize-sw" on:mousedown={(e) => handleResizeMouseDown(e, 'sw')} role="presentation"></div>
+  <div class="resize-handle resize-se" on:mousedown={(e) => handleResizeMouseDown(e, 'se')} role="presentation"></div>
+  
+  <!-- Edges -->
+  <div class="resize-handle resize-n" on:mousedown={(e) => handleResizeMouseDown(e, 'n')} role="presentation"></div>
+  <div class="resize-handle resize-s" on:mousedown={(e) => handleResizeMouseDown(e, 's')} role="presentation"></div>
+  <div class="resize-handle resize-w" on:mousedown={(e) => handleResizeMouseDown(e, 'w')} role="presentation"></div>
+  <div class="resize-handle resize-e" on:mousedown={(e) => handleResizeMouseDown(e, 'e')} role="presentation"></div>
 </div>
 {/if}
 
@@ -135,18 +188,79 @@ function handleResizeMouseUp() {
     box-sizing: border-box;
   }
   .resize-handle {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 20px;
-  height: 20px;
-  cursor: nwse-resize;
-  background: linear-gradient(135deg, transparent 0%, transparent 50%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.3) 100%);
-}
+    position: absolute;
+  }
 
-.resize-handle:hover {
-  background: linear-gradient(135deg, transparent 0%, transparent 50%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.6) 100%);
-}
+  /* Corner handles */
+  .resize-nw {
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    cursor: nwse-resize;
+  }
+
+  .resize-ne {
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    cursor: nesw-resize;
+  }
+
+  .resize-sw {
+    bottom: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    cursor: nesw-resize;
+  }
+
+  .resize-se {
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    cursor: nwse-resize;
+    background: linear-gradient(135deg, transparent 0%, transparent 50%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.3) 100%);
+  }
+
+  .resize-se:hover {
+    background: linear-gradient(135deg, transparent 0%, transparent 50%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.6) 100%);
+  }
+
+  /* Edge handles */
+  .resize-n {
+    top: 0;
+    left: 10px;
+    right: 10px;
+    height: 5px;
+    cursor: ns-resize;
+  }
+
+  .resize-s {
+    bottom: 0;
+    left: 10px;
+    right: 10px;
+    height: 5px;
+    cursor: ns-resize;
+  }
+
+  .resize-w {
+    top: 10px;
+    left: 0;
+    width: 5px;
+    bottom: 10px;
+    cursor: ew-resize;
+  }
+
+  .resize-e {
+    top: 10px;
+    right: 0;
+    width: 5px;
+    bottom: 10px;
+    cursor: ew-resize;
+  }
 
 .titlebar {
   color: white;

@@ -1,15 +1,22 @@
 import { writable } from 'svelte/store';
 import type { Window } from '../types/window';
+import { processStore } from './processStore';
 
 function createWindowStore() {
   const { subscribe, set, update } = writable<Window[]>([]);
 
   return {
     subscribe,
-    openWindow: (window: Window) =>
-      update(windows => [...windows, { ...window, zIndex: windows.length }]),
-    closeWindow: (id: string) =>
-      update(windows => windows.filter(w => w.id !== id)),
+    openWindow: (window: Window) => {
+      // Register process when window opens
+      const pid = processStore.registerProcess(window.id, window.appName);
+      update(windows => [...windows, { ...window, zIndex: windows.length }]);
+    },
+    closeWindow: (id: string) => {
+      // Unregister process when window closes
+      processStore.unregisterProcess(id);
+      update(windows => windows.filter(w => w.id !== id));
+    },
     focusWindow: (id: string) => {
       update(windows => {
         const maxZIndex = Math.max(...windows.map(w => w.zIndex), 0);
