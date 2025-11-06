@@ -1,5 +1,17 @@
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { execSync } from 'child_process'
+
+// Get git commit hash
+let gitHash = 'unknown'
+try {
+  gitHash = execSync('git rev-parse --short HEAD', { 
+    encoding: 'utf-8',
+    stdio: ['pipe', 'pipe', 'ignore']
+  }).trim()
+} catch (e) {
+  console.warn('Could not get git hash')
+}
 
 const shutdownPlugin = {
   name: 'shutdown-plugin',
@@ -32,4 +44,7 @@ const shutdownPlugin = {
 export default defineConfig({
   plugins: [svelte(), shutdownPlugin],
   base: "/fatuus/",
+  define: {
+    __GIT_HASH__: JSON.stringify(gitHash)
+  }
 })

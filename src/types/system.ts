@@ -5,4 +5,5 @@ export interface SystemState {
   runningApps: string[];  // App IDeez nuts
   wallpaperGradient: string; 
   accentColor: string;
+  version: string;
 }

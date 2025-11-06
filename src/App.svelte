@@ -7,6 +7,7 @@
   import WindowManager from './components/WindowManager.svelte';
   import Taskbar from './components/Taskbar.svelte';
   import ServerStatusWarning from './components/ServerStatusWarning.svelte';
+  import FileDialog from './components/FileDialog.svelte';
 
   let windows: any[] = [];
   let system: any;
@@ -26,6 +27,7 @@
 </script>
 
 <ServerStatusWarning />
+<FileDialog />
 <main style="--accent-color: {system?.accentColor || '#667eea'}">
   <Desktop />
   <WindowManager />

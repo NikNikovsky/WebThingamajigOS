@@ -11,6 +11,7 @@
   let dragStartY = 0;
   let dragged = false;
   let wallpaper = '';
+  let version = 'unknown';
 
   function launchUltrakill() {
     const app = appRegistry.get('Ultrakill');
@@ -32,9 +33,10 @@
   }
 
   onMount(() => {
-    // Subscribe to systemStore for wallpaper
+    // Subscribe to systemStore for wallpaper and version
     systemStore.subscribe(s => {
       wallpaper = s.wallpaperGradient;
+      version = s.version;
     });
 
     // Subscribe to windowStore for windows
@@ -107,6 +109,7 @@
   <h1 class="desktop-title">Fatuus</h1>
   <p class="desktop-subtitle">Fatuus Erratum</p>
   <p class="desktop-subsubtitle">Made by an idiot (Me, Nik)</p>
+  <p class="desktop-version">v{version}</p>
 </div>
 
 {#each windows.filter(w => w.isMinimized) as window (window.id)}
@@ -157,6 +160,14 @@
     font-size: 14px;
     color: rgba(255, 255, 255, 0.6);
     text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+  }
+
+  .desktop-version {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+    margin-top: 15px;
+    font-family: 'Courier New', monospace;
   }
 
   .minimized-widget {

@@ -40,6 +40,7 @@ const initialState: SystemState = {
   runningApps: [],
   wallpaperGradient: theme.wallpaperGradient,
   accentColor: theme.accentColor,
+  version: __GIT_HASH__,
 };
 
 export const systemStore = writable<SystemState>(initialState);

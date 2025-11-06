@@ -2,13 +2,16 @@
   import { writable } from 'svelte/store';
   import { fileDialogStore, openFileDialog, setCurrentlyOpen } from '../../state/fileDialogStore';
   import { windowStore } from '../../state/windowStore';
+  import { fileSaveStore } from '../../state/fileSaveStore';
   
   export let windowId: string;
   
   let content = writable('');
-  let fileName = 'Titled.txt';
+  let fileName = 'Untitled.txt';
+  let filePath = '';
   let activeMenu: string | null = null;
   let showFindReplace = false;
+  let isSaved = true;
  
  function toggleMenu(menuName: string) {
   activeMenu = activeMenu === menuName ? null : menuName;
@@ -21,6 +24,8 @@ function closeMenus() {
 function newDocument() {
   $content = '';
   fileName = 'Untitled.txt';
+  filePath = '';
+  isSaved = true;
   activeMenu = null;
 }
 
@@ -28,14 +33,32 @@ fileDialogStore.subscribe(dialog => {
   if (dialog.selectedFile && dialog.requestedBy === 'TextManipulator') {
     content.set(dialog.selectedFile.content);
     fileName = dialog.selectedFile.name;
+    filePath = dialog.selectedFile.path;
+    isSaved = true;
     setCurrentlyOpen(dialog.selectedFile);
     windowStore.updateWindowTitle(windowId, `Text Changer - ${fileName}`);
   }
 });
 
-// Saves, duh!
+// Track changes to mark as unsaved
+content.subscribe(() => {
+  if (fileName !== 'Untitled.txt' || filePath !== '') {
+    isSaved = false;
+  }
+});
+
+// Saves to mock file system
 function saveFile() {
-  save();
+  if (filePath) {
+    // Save to mock file system
+    fileSaveStore.saveFile(filePath, $content);
+    isSaved = true;
+    windowStore.updateWindowTitle(windowId, `Text Changer - ${fileName}`);
+    console.log(`[TextManipulator] File saved: ${filePath}`);
+  } else {
+    // For new documents, trigger a download
+    downloadFile();
+  }
   activeMenu = null;
 }
 
@@ -48,24 +71,25 @@ function selectAll() {
 }
 
 function undo() {
-  // Holceplader - would need history tracking
+  // Placeholder - would need history tracking
   activeMenu = null;
 }
 
 function redo() {
-  // Holceplader - would need history tracking
+  // Placeholder - would need history tracking
   activeMenu = null;
 }
 
 function toggleWordWrap() {
-  // Holceplader
+  // Placeholder
 }
+
 function openFindReplace() {
   showFindReplace = true;
   activeMenu = null;
 }
 
-  function save() {
+  function downloadFile() {
     const element = document.createElement('a');
     element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent($content)}`);
     element.setAttribute('download', fileName);
@@ -96,6 +120,7 @@ function openFindReplace() {
     {#if activeMenu === 'file'}
       <div class="dropdown" data-menu="file">
         <button class="dropdown-item" on:click={newDocument}>New</button>
+        <button class="dropdown-item" on:click={openFile}>Open</button>
         <button class="dropdown-item" on:click={saveFile}>Save</button>
         <hr>
         <button class="dropdown-item" on:click={closeMenus}>Close Menu</button>
