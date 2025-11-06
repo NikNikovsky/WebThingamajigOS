@@ -3,6 +3,7 @@
   import { windowStore } from '../state/windowStore';
   import { appRegistry } from '../lib/appRegistry';
   import { onMount } from 'svelte';
+  import {scale} from 'svelte/transition';
 
   let showStartMenu = false;
 
@@ -66,7 +67,7 @@ onMount(() => {
   <div class="taskbar-left">
     <button class="start-button" on:click={toggleStartMenu}>📁 Start</button>
     {#if showStartMenu}
-      <div class="start-menu" role="menu">
+      <div class="start-menu" role="menu" transition:scale={{ duration: 300, start: 0.7 }}>
         <div class="menu-header">Applications</div>
         {#each Array.from(appRegistry.entries()) as [appName, app]}
           <button class="app-button" on:click={() => launchApp(appName)}>
@@ -117,11 +118,11 @@ onMount(() => {
   }
 
   .start-button {
-    padding: 6px 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.3);
     color: white;
-    border: none;
-    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
@@ -129,8 +130,9 @@ onMount(() => {
   }
 
   .start-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
   }
 
   .start-button:active {
@@ -142,22 +144,41 @@ onMount(() => {
     bottom: 60px;
     left: 0;
     background: rgba(20, 20, 30, 0.95);
-    border: 1px solid rgba(102, 126, 234, 0.3);
+    border: 1px solid var(--accent-color);
     border-radius: 6px;
     min-width: 200px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
     z-index: 1001;
+    transform-origin: bottom;
   }
 
   .menu-header {
     padding: 10px 15px;
     font-weight: 600;
-    color: #667eea;
-    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+    color: var(--accent-color);
+    border-bottom: 1px solid var(--accent-color);
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    opacity: 0.5;
+  }
+
+  .app-button {
+    width: 100%;
+    padding: 10px 15px;
+    background: transparent;
+    color: white;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+  }
+
+  .app-button:hover {
+    background: var(--accent-color);
+    opacity: 0.2;
   }
 
   .time {
