@@ -4,6 +4,9 @@
     let files: { id: number; name: string; type: string; size: string; modified: string }[] = [];
     let currentPath: string = '/';
     
+onMount(() => {
+  loadFiles();  // Load initial files when component mounts
+});
 const mockFileSystem: { [key: string]: typeof files } = {
   '/': [
     { id: 1, name: 'Documents', type: 'folder', size: '-', modified: '2025-11-01' },
@@ -34,10 +37,12 @@ function goBack() {
     parts.pop();
     currentPath = '/' + parts.join('/');
   }
+  loadFiles();
 }
 
 function goHome() {
-  currentPath = '/'
+  currentPath = '/';
+  loadFiles();
 }
 
 function refresh() {
