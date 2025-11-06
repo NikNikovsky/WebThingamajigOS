@@ -32,18 +32,10 @@ onMount(() => {
     showStartMenu = !showStartMenu;
   }
 
-  // Close the menu when not clicking in the menu
-  function handleClickOutside(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.taskbar-left')) {
-      showStartMenu = false;
-    }
-  }
-
   function launchApp(appName: string) {
     const app = appRegistry.get(appName);
     if (app) {
-      windowStore.openWindow({
+      const windowConfig = {
         id: `${appName}-${Date.now()}`,
         title: app.title,
         appName: appName,
@@ -55,13 +47,19 @@ onMount(() => {
         isMinimized: false,
         isMaximized: false,
         isFocused: true,
-      });
+      };
+      windowStore.openWindow(windowConfig);
       showStartMenu = false;
     }
   }
 </script>
 
-<svelte:window on:click={handleClickOutside} />
+<svelte:window on:click={({ target }) => {
+  const element = target as HTMLElement;
+  if (!element.closest('.taskbar-left')) {
+    showStartMenu = false;
+  }
+}} />
 
 <div class="taskbar">
   <div class="taskbar-left">

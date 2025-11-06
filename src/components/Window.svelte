@@ -6,7 +6,7 @@
   
   export let window: WindowType;
   export let app: any; // The app component
-  
+
   let isDragging = false;
   let dragOffsetX = 0;
   let dragOffsetY = 0;

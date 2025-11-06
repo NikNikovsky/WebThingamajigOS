@@ -9,9 +9,8 @@ It might around 2 minutes for the website to be accessible after a push, this is
 None, if you find any, let me know.
 
 ## Planned features
-- **Window Animations** - Add smooth animations for maximize and close actions
 - **File Manager app** - Browse and manage files
-- **Settings app** - System preferences and configuration
+- **Settings app** - System preferences and configuration, currently not working
 - **Multi user functionality** - User accounts and login
 - **User Storage** - Persistent file storage
 - **Music/Video Player** - Media playback

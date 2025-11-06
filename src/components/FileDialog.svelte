@@ -90,7 +90,7 @@
 
 {#if dialog?.isOpen}
   <div class="file-dialog-overlay" role="presentation" on:click={handleCancel} on:keydown={() => {}}>
-    <div class="file-dialog" role="dialog" aria-modal="true" tabindex="0" on:click|stopPropagation>
+    <div class="file-dialog" role="dialog" aria-modal="true" tabindex="0" on:click|stopPropagation on:keydown={() => {}}>
       <div class="dialog-header">
         <h2>Open File</h2>
         <button class="close-btn" on:click={handleCancel}>✕</button>
