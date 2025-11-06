@@ -4,21 +4,28 @@
     let files: { id: number; name: string; type: string; size: string; modified: string }[] = [];
     let currentPath: string = '/';
     
-    onMount(() => {
-        // For now, use mock data
-        files = [
-        { id: 1, name: 'Documents', type: 'folder', size: '-', modified: '2025-11-01' },
-        { id: 2, name: 'Pictures', type: 'folder', size: '-', modified: '2025-11-01' },
-        { id: 3, name: 'notes.txt', type: 'file', size: '5 KB', modified: '2025-10-28' },
-        ];
-    });
+const mockFileSystem: { [key: string]: typeof files } = {
+  '/': [
+    { id: 1, name: 'Documents', type: 'folder', size: '-', modified: '2025-11-01' },
+    { id: 2, name: 'Pictures', type: 'folder', size: '-', modified: '2025-11-01' },
+    { id: 3, name: 'how to build a nuclear reactor.txt', type: 'file', size: '5 KB', modified: '2025-10-28' },
+  ],
+  '/Documents': [
+    { id: 4, name: 'User Guide.pdf', type: 'file', size: '250 KB', modified: '2025-11-03' },
+    { id: 5, name: 'Project.docx', type: 'file', size: '120 KB', modified: '2025-10-30' },
+  ],
+  '/Pictures': [
+    { id: 6, name: 'good moaning.jpg', type: 'file', size: '53.4 KB', modified: '2025-04-09' },
+    { id: 7, name: 'IsaacFurry.PNG', type: 'file', size: '141 KB', modified: '2025-04-09' },
+  ],
+};
 function navigateToFolder(folderName: string) {
-    if (currentPath === '/') {
+  if (currentPath === '/') {
     currentPath = '/' + folderName;
   } else {
     currentPath = currentPath + '/' + folderName;
   }
-  // In a real app, files would be loaded from a real path
+  loadFiles();
 }
 
 function goBack() {
@@ -36,6 +43,9 @@ function goHome() {
 function refresh() {
   // Reload files (mock)
   files = [...files];
+}
+function loadFiles() {
+  files = mockFileSystem[currentPath] || [];
 }
 </script>
 
