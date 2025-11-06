@@ -3,6 +3,7 @@ import TextManipulator from '../apps/TextManipulator/TextManipulator.svelte';
 import FileMangler from '../apps/FileMangler/FileMangler.svelte';  
 import Jukebox from '../apps/Jukebox/Jukebox.svelte';
 import TasqueMangler from '../apps/TasqueMangler/TasqueMangler.svelte';
+import Settings from '../apps/Settings/Settings.svelte';
 
 export const appRegistry: Map<string, AppMetadata> = new Map([
    ['TextManipulator', {
@@ -32,7 +33,14 @@ export const appRegistry: Map<string, AppMetadata> = new Map([
     icon: 'tasks',
     component: TasqueMangler,
     defaultWindow: { width: 800, height: 600 }
-  }]
+  }],
+  ['Settings', {
+    name: 'Settings',
+    title: 'Settings',
+    icon: 'cog',
+    component: Settings,
+    defaultWindow: { width: 800, height: 600 }
+   }]
 ]);
 
 export function getApp(name: string): AppMetadata | undefined {

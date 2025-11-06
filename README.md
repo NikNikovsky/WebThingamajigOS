@@ -9,10 +9,10 @@ It might around 2 minutes for the website to be accessible after a push, this is
 None, if you find any, let me know.
 
 ## Planned features
-- **File Manager app**: Empty app with nothing in it
-- **Settings app**: Not yet created
-- **Multi user functionality**: Not created
-- **User Storage**: Not created
-- **Music/Video Player**: Not created
-- **Custom icons, wallpapers**: Planned, not made
-- **Task Manager**: Planned
+- **Window Animations** - Add smooth animations for maximize and close actions
+- **File Manager app** - Browse and manage files
+- **Settings app** - System preferences and configuration
+- **Multi user functionality** - User accounts and login
+- **User Storage** - Persistent file storage
+- **Music/Video Player** - Media playback
+- **Custom icons, wallpapers** - Personalization options
