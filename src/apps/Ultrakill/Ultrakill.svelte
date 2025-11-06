@@ -4,7 +4,7 @@
   async function shutdown() {
     isShuttingDown = true;
     try {
-      const response = await fetch('/fatuus/api/shutdown', { method: 'POST' });
+      const response = await fetch('/api/shutdown', { method: 'POST' });
       if (response.ok) {
         console.log('Shutdown command sent');
       }

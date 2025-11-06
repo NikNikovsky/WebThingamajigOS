@@ -1,21 +1,31 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { windowStore } from './state/windowStore';
   import { generateRandomGradient, systemStore } from './state/systemStore';
+  import { healthStore } from './state/healthStore';
   import Desktop from './components/Desktop.svelte';
   import WindowManager from './components/WindowManager.svelte';
   import Taskbar from './components/Taskbar.svelte';
+  import ServerStatusWarning from './components/ServerStatusWarning.svelte';
 
   let windows: any[] = [];
   let system: any;
+  let health: any;
 
   onMount(() => {
     windowStore.subscribe(w => windows = w);
     systemStore.subscribe(s => system = s);
+    healthStore.subscribe(h => health = h);
     generateRandomGradient();
+    healthStore.startHealthCheck();
+  });
+
+  onDestroy(() => {
+    healthStore.stopHealthCheck();
   });
 </script>
 
+<ServerStatusWarning />
 <main style="--accent-color: {system?.accentColor || '#667eea'}">
   <Desktop />
   <WindowManager />
