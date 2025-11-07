@@ -17,7 +17,7 @@
     "vite": "^7.2.1"
   },
   "dependencies": {
-    "lucide-svelte": "^0.552.0",
+    "lucide-svelte": "^0.553.0",
     "svelte-spa-router": "^4.0.1"
   }
 }
