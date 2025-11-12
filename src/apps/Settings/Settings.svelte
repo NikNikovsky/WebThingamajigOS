@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { preferencesStore, type Preferences } from '../../state/preferencesStore';
+import defaultPreferences, { type Preferences } from '../../state/defaultPreferences';
+import { preferencesStore } from '../../state/preferencesStore';
 
   let prefs: Preferences;
   let hasChanges = false;
@@ -32,6 +33,7 @@
     { id: 'sound', label: 'Sound & Audio', icon: '🔊' },
     { id: 'window', label: 'Window & Navigation', icon: '🪟' },
     { id: 'files', label: 'Files & Saving', icon: '💾' },
+    { id: 'apps', label: 'Applications', icon: '📱' },
     { id: 'system', label: 'System & Language', icon: '⚙️' },
   ];
 </script>
@@ -144,6 +146,28 @@
             />
             <span>Auto-Save Files</span>
           </label>
+        </div>
+      </div>
+    {/if}
+
+    <!-- Applications Section -->
+    {#if selectedSection === 'apps'}
+      <div class="section">
+        <h2>Application Settings</h2>
+
+        <div class="subsection">
+          <h3>Text Manipulator</h3>
+          <div class="setting-group checkbox">
+            <label for="remember-last-file">
+              <input
+                id="remember-last-file"
+                type="checkbox"
+                bind:checked={prefs.rememberLastFile}
+                on:change={handleChange}
+              />
+              <span>Remember Last Opened File</span>
+            </label>
+          </div>
         </div>
       </div>
     {/if}
@@ -268,6 +292,23 @@
     font-weight: 600;
     color: #64b5f6;
     margin: 0 0 10px 0;
+  }
+
+  .subsection {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px;
+    background: rgba(100, 181, 246, 0.05);
+    border-left: 3px solid #64b5f6;
+    border-radius: 4px;
+  }
+
+  .subsection h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #64b5f6;
+    margin: 0 0 8px 0;
   }
 
   .setting-group {

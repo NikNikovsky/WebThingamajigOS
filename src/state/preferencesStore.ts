@@ -1,24 +1,6 @@
 import { writable } from 'svelte/store';
+import defaultPreferences, { type Preferences } from './defaultPreferences';
 
-export interface Preferences {
-  theme: 'light' | 'dark' | 'auto';
-  soundEnabled: boolean;
-  animations: boolean;
-  language: string;
-  autoSave: boolean;
-  windowSnap: boolean;
-  fontSize: 'small' | 'normal' | 'large';
-}
-
-const defaultPreferences: Preferences = {
-  theme: 'dark',
-  soundEnabled: true,
-  animations: true,
-  language: 'en',
-  autoSave: true,
-  windowSnap: true,
-  fontSize: 'normal',
-};
 
 // Try to load from localStorage, fall back to defaults
 function loadPreferences(): Preferences {

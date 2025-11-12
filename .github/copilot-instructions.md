@@ -144,11 +144,10 @@ windowStore.focusWindow(windowId);
 ---
 
 ## Current Known Issues & TODOs
-
-- **Window dragging/resizing**: Handlers stubbed in `Window.svelte`, needs implementation
-- **File manager app**: Not yet created
-- **Settings app**: Not yet created
+- **File manager app**: Created (FileMangler) - works, needs enhancements (delete, rename, create folder)
 - **CSS positioning**: Windows may overlap taskbar - needs padding adjustment
+- **Jukebox audio player**: Currently placeholder, needs full implementation
+- **TextManipulator enhancements**: Undo/Redo and Find & Replace now implemented, with "Remember Last File" preference in Applications settings
 Also check the code, README and with the user for latest known issues.
 
 ---

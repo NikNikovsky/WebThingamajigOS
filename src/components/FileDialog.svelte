@@ -37,6 +37,9 @@
     files = mockFileSystem[currentPath] || [];
   }
 
+  // Load initial files on mount
+  loadFiles();
+
   function navigateToFolder(folderName: string) {
     if (currentPath === '/') {
       currentPath = '/' + folderName;
@@ -243,7 +246,7 @@
     text-align: left;
     width: 100%;
     font-family: inherit;
-    color: inherit;
+    color: #222;
   }
 
   .file-item:hover {

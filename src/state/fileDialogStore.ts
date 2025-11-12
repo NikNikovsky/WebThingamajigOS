@@ -25,8 +25,7 @@ export function openFileDialog(appName: string) {
 export function closeFileDialog() {
   fileDialogStore.update((state: FileDialogRequest) => ({
     ...state,
-    isOpen: false,
-    requestedBy: null
+    isOpen: false
   }));
 }
 

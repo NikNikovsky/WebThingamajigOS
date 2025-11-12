@@ -111,6 +111,7 @@ function handleFileDoubleClick(file: { id: number; name: string; type: string; s
       // Set file in dialog store so the app can receive it
       fileDialogStore.update(state => ({
         ...state,
+        requestedBy: appName,
         selectedFile: {
           name: file.name,
           path: filePath,
