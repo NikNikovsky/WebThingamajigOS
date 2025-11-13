@@ -183,6 +183,7 @@ preferencesStore.subscribe(prefs => {
 
 // Auto-load last file on component mount if preference is enabled
 onMount(() => {
+  console.log('onMount fired. rememberLastFile =', currentPreferences.rememberLastFile);
   if (currentPreferences.rememberLastFile) {
     lastFileStore.subscribe(lastFile => {
       if (lastFile && lastProcessedFileId === '') {
