@@ -183,21 +183,25 @@ preferencesStore.subscribe(prefs => {
 
 // Auto-load last file on component mount if preference is enabled
 onMount(() => {
-  console.log('onMount fired. rememberLastFile =', currentPreferences.rememberLastFile);
   if (currentPreferences.rememberLastFile) {
-    lastFileStore.subscribe(lastFile => {
-      if (lastFile && lastProcessedFileId === '') {
-        content.set(lastFile.content);
-        fileName = lastFile.name;
-        filePath = lastFile.path;
-        isSaved = true;
-        history = [lastFile.content];
-        historyIndex = 0;
-        setCurrentlyOpen(lastFile);
-        windowStore.updateWindowTitle(windowId, `Text Changer - ${fileName}`);
-        lastProcessedFileId = `${lastFile.path}-${lastFile.name}`;
-      }
+    // Get the last file value once (not a persistent subscription)
+    let lastFile: any;
+    const unsubscribe = lastFileStore.subscribe(file => {
+      lastFile = file;
     });
+    unsubscribe(); // Immediately unsubscribe after getting the value
+    
+    if (lastFile && lastProcessedFileId === '') {
+      content.set(lastFile.content);
+      fileName = lastFile.name;
+      filePath = lastFile.path;
+      isSaved = true;
+      history = [lastFile.content];
+      historyIndex = 0;
+      setCurrentlyOpen(lastFile);
+      windowStore.updateWindowTitle(windowId, `Text Changer - ${fileName}`);
+      lastProcessedFileId = `${lastFile.path}-${lastFile.name}`;
+    }
   }
 });
 
