@@ -1,0 +1,34 @@
+First of all, thank you! I'm genuinely surprised you cared enough to fix an issue here, let alone read this document, it's not like many read documents.
+
+GitHub should link you to the Code of Conduct, but let me know if you can't find it.
+
+## Basic rules
+They are very simple in fact
+
+1.  **Don't submit broken code.** All submissions must be tested and fully functional.
+2.  **No AI "Slop".** While **AI assistance is permitted** (as this project is partially existent thanks to Claude), simply copying and pasting AI-generated content (including commit messages) without understanding, review, or modification is unacceptable. 
+Use AI to help, not replace.
+3. All code must strictly follow the standard style guides for **Svelte** and **TypeScript**.
+
+## Submitting a PR
+When resolving a bug or implementing a new visible feature:
+
+* **Provide Visual Evidence:** Please include a **screen recording** of the issue being resolved/feature working correctly.
+* **Screenshots** are acceptable (in some cases) but provide less context.
+
+## Commit messages
+* **Short & Descriptive:** I recommend using short, clear commit messages detailing exactly what you did (e.g., `Add user profile validation`).
+* **Funny:** If you choose a funny or less technical commit name, that is acceptable **only if** you provide a detailed, descriptive explanation of your changes in the commit description.
+
+## Review
+
+Your PR will be evaluated based on the following criteria:
+
+* **Cleanness of Code:** No unnecessary edits, refactoring unrelated to the issue, or code that violates the CoC.
+* **Use of AI:** Checked for compliance with the "No AI Slop" rule above.
+* **Behavior:** Checked against the standards outlined in the Code of Conduct.
+
+### Review Time
+
+* Review time could range from **an hour to multiple days**.
+* Please note the **Europe/Warsaw time** when submitting your PR to gauge your expected waiting period. I will try to get back to you as quickly as possible, but remember that I have a life (shocker, I know).
