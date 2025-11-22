@@ -14,22 +14,7 @@ onMount(() => {
 
 // Mock file contents
 const mockFileContents: { [key: string]: string } = {
-  '/how to build a nuclear reactor.txt': `# How to Build a Nuclear Reactor
-
-## WARNING: This is satirical and fictional!
-
-1. First, obtain some uranium... just kidding, don't do that.
-2. This is a joke file created for demonstration purposes.
-3. Nuclear science is actually super complex and requires years of study.
-4. Please don't try this at home!
-
-## Actual Nuclear Facts:
-- Nuclear reactions power about 10% of the world's electricity
-- Modern nuclear plants have multiple safety systems
-- Nuclear waste is handled very carefully
-- Proper training and licensing is absolutely required
-
-Stay safe! 😄`,
+  '/how to build a nuclear reactor.txt': `dont();`,
   
   '/Documents/User Guide.pdf': `# User Guide
 

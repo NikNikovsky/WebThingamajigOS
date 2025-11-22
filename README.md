@@ -14,7 +14,7 @@ It might around 2 minutes for the website to be accessible after a push, this is
 - Real storage does not exist, it's all just mock storage defined in the code
 - The manual Directory typing box does not work
 ### Music Player
-- Literally a placeholder appliacation
+- Literally a placeholder application
 ### Settings
 - No preferences seem to stick (such as appearance or language for example)
 ### Other
