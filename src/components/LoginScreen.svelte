@@ -88,6 +88,9 @@
 
 <div class="login-container">
   <div class="login-card">
+    <div class="wip-notice">
+      ⚙️ <strong>Note:</strong> Server-side features are currently a work in progress.
+    </div>
     <h1>Welcome Back</h1>
     <p class="subtitle">Sign in to your Fatuus account</p>
 
@@ -428,5 +431,19 @@
   .dev-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .wip-notice {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 24px;
+    font-size: 0.9em;
+  }
+
+  .wip-notice strong {
+    font-weight: 600;
   }
 </style>

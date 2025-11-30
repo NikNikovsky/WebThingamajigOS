@@ -9,6 +9,7 @@
   let isLoadingLicense = true;
   let isTestingConnection = false;
   let connectionError = '';
+  let userName = '';
 
   // Load LICENSE file
   onMount(async () => {
@@ -74,6 +75,10 @@
     if (selectedMode) {
       const serverUrl = selectedMode === 'localhost' ? `http://${serverIp}` : null;
       settingsStore.setMode(selectedMode, serverUrl);
+      // For offline mode, auto-login with the user's name
+      if (selectedMode === 'offline' && userName.trim()) {
+        settingsStore.login(userName.trim(), false);
+      }
       settingsStore.completeOOBE();
     }
   }
@@ -113,6 +118,10 @@
     <div class="oobe-screen">
       <h2>Choose Your Mode</h2>
       <p>How do you want to use Fatuus?</p>
+
+      <div class="wip-notice">
+        ⚙️ <strong>Note:</strong> Server-side features are currently a work in progress.
+      </div>
 
       {#if connectionError}
         <div class="error-message">
@@ -169,21 +178,43 @@
     </div>
   {/if}
 
-  <!-- Step 3: Summary -->
-  {#if currentStep === 3}
+  <!-- Step 3: User Name (offline mode) or Summary (connected mode) -->
+  {#if currentStep === 3 && selectedMode === 'offline'}
+    <div class="oobe-screen">
+      <h2>What should we call you?</h2>
+      <p>Choose a name to personalize your experience.</p>
+      <input
+        type="text"
+        class="name-input"
+        placeholder="Enter your name"
+        bind:value={userName}
+      />
+      <div class="button-group">
+        <button class="secondary-btn" on:click={prevStep}>Back</button>
+        <button
+          class="primary-btn success-btn"
+          on:click={finishOOBE}
+          disabled={!userName.trim()}
+        >
+          Get Started
+        </button>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Step 3: Summary (connected mode) -->
+  {#if currentStep === 3 && selectedMode === 'localhost'}
     <div class="oobe-screen">
       <h2>Ready to Go!</h2>
       <div class="summary">
         <div class="summary-item">
           <strong>Mode:</strong>
-          <span>{selectedMode === 'offline' ? 'Offline (Local)' : 'Connected Mode'}</span>
+          <span>Connected Mode</span>
         </div>
-        {#if selectedMode === 'localhost'}
-          <div class="summary-item">
-            <strong>Server:</strong>
-            <span>{serverIp}</span>
-          </div>
-        {/if}
+        <div class="summary-item">
+          <strong>Server:</strong>
+          <span>{serverIp}</span>
+        </div>
       </div>
       <p class="summary-note">You can change these settings later in the Settings app.</p>
 
@@ -410,8 +441,43 @@
     background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
   }
 
-  .success-btn:hover {
+  .success-btn:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
+  }
+
+  .success-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .name-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 1em;
+    margin: 20px 0 30px 0;
+    transition: all 0.2s;
+  }
+
+  .name-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .wip-notice {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+  }
+
+  .wip-notice strong {
+    font-weight: 600;
   }
 </style>

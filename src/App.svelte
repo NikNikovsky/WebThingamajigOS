@@ -32,7 +32,8 @@
 
   // Determine which screen to show
   $: showOOBE = !settings?.hasCompletedOOBE;
-  $: showLoginScreen = settings?.hasCompletedOOBE && !settings?.isLoggedIn;
+  // Skip login screen in offline mode (user is auto-logged in)
+  $: showLoginScreen = settings?.hasCompletedOOBE && !settings?.isLoggedIn && settings?.mode !== 'offline';
   $: showDesktop = settings?.hasCompletedOOBE && settings?.isLoggedIn;
 </script>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 import defaultPreferences, { type Preferences } from '../../state/defaultPreferences';
 import { preferencesStore } from '../../state/preferencesStore';
+import { settingsStore } from '../../state/settingsStore';
 
   let prefs: Preferences;
   let hasChanges = false;
@@ -25,6 +26,15 @@ import { preferencesStore } from '../../state/preferencesStore';
     if (confirm('Reset all preferences to defaults?')) {
       preferencesStore.reset();
       hasChanges = false;
+    }
+  }
+
+  function restartOOBE() {
+    if (confirm('Restart onboarding? This will reset your Fatuus setup.')) {
+      settingsStore.reset();
+      // Optionally close Settings app window if you have access to windowStore
+      // For now, just reset and user will be taken back to OOBE on refresh
+      location.reload();
     }
   }
 
@@ -185,6 +195,12 @@ import { preferencesStore } from '../../state/preferencesStore';
             <option value="fr">Français</option>
             <option value="de">Deutsch</option>
           </select>
+        </div>
+
+        <div class="subsection">
+          <h3>Onboarding</h3>
+          <p class="subsection-text">Start the setup process again to reconfigure your Fatuus experience.</p>
+          <button class="btn-danger" on:click={restartOOBE}>Restart Onboarding</button>
         </div>
       </div>
     {/if}
@@ -417,6 +433,31 @@ import { preferencesStore } from '../../state/preferencesStore';
   .btn-secondary:hover {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-danger {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-danger:hover {
+    background: #ff5252;
+    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+  }
+
+  .subsection-text {
+    font-size: 13px;
+    color: #b0b0b0;
+    margin: 0 0 12px 0;
   }
 
   /* Scrollbar styling */
