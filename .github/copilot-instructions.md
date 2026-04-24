@@ -1,160 +1,105 @@
-# Copilot Instructions for WebThingamajigOS
+# Copilot Instructions for Fatuus
 
 ## Project Overview
 
-WebThingamajigOS is a browser-based operating system built with **Svelte + TypeScript + Vite**. It mimics a desktop OS with window management, a taskbar, applications, and state management - inspired by ArcOS.
+Fatuus is a browser-based OS-like UI built with Svelte and Vite. It includes onboarding, login, a desktop shell, window management, and app-style components.
 
-**Key Context**: User is a beginner learning to code. Prioritize **explanation over auto-fixing** - guide them through changes instead of implementing directly.
-Except for guide.html, which is a learning resource and a log of what we did.
+User context: beginner-friendly explanations are required.
 
----
+Rule: do not silently replace any code. Explain what will change and why before proposing code, unless the user explicitly asks for direct implementation.
 
-## Architecture Essentials
+## Current Architecture
 
-### Core Layers (Understand Before Suggesting Changes)
+### Runtime screen flow
 
-1. **Presentation Layer** (`src/components/`) - Svelte components: `Desktop`, `Taskbar`, `WindowManager`, `Window`
-2. **State Layer** (`src/state/`) - Svelte stores using `writable()`: `windowStore`, `systemStore`
-3. **Business Logic** (`src/lib/`) - Registry patterns and utilities: `appRegistry`, `windowManager` (planned)
-4. **Type Layer** (`src/types/`) - TypeScript interfaces: `Window`, `App`, `System`, `File` (planned)
-5. **Applications** (`src/apps/`) - Individual app components (TextEditor example exists in guide)
+`src/App.svelte` determines what to render:
 
-### Data Flow
-- **Window Operations**: UI → `Taskbar.launchApp()` → `windowStore.openWindow()` → Windows array updates → `WindowManager` renders
-- **Window Focus**: Click window → `windowStore.focusWindow()` → Z-index recalculated → Svelte reactivity updates view
-- **App Launch**: Start menu button → `launchApp(appName)` → Registry lookup → Window creation with app component
+1. OOBE (`src/components/OOBE.svelte`) when `hasCompletedOOBE` is false
+2. Login (`src/components/LoginScreen.svelte`) when OOBE is done but user is not logged in and mode is not offline
+3. Desktop shell (`Desktop`, `WindowManager`, `Taskbar`) once logged in
 
----
+Global overlays loaded by root app:
 
-## Critical Files & Patterns
+- `src/components/ServerStatusWarning.svelte` (server-health warning screen)
+- `src/components/FileDialog.svelte` (shared file picker modal)
 
-### State Management (`src/state/windowStore.ts`)
-- **Pattern**: Custom store factory returning object with `subscribe` + custom methods
-- **Operations**: `openWindow()`, `closeWindow()`, `focusWindow()`, `moveWindow()`, `resizeWindow()`
-- **Z-Index Logic**: Auto-calculated; focus sets to `maxZIndex + 1`
-- **Don't**: Directly mutate store - always use update functions
+### Main state stores
 
-### Component Structure
-- **App.svelte**: Root component that renders `<Desktop>`, `<WindowManager>`, `<Taskbar>` in order
-- **Taskbar.svelte**: Handles Start menu state, app launching, time display (updates every 60s)
-- **WindowManager.svelte**: Subscribes to `windowStore`, renders `Window` components for each entry
-- **Window.svelte**: Individual window with drag/resize (handlers exist but need completion)
-- **Desktop.svelte**: Fixed background with title; uses `pointer-events: none` so it doesn't block clicks
+- `src/state/windowStore.ts`
+  - Handles open/close/focus/move/resize/minimize/restore
+  - Registers and unregisters pseudo-processes in `processStore`
+- `src/state/settingsStore.ts`
+  - Persists onboarding mode, server URL, and login state to localStorage (`fatuus-settings`)
+- `src/state/preferencesStore.ts`
+  - Persists app and UI preferences, used by Settings and apps like TextManipulator
+- `src/state/healthStore.ts`
+  - Periodic health checks and alive/down state
+- `src/state/processStore.ts`
+  - Simple PID-like tracking for open windows/apps
 
-### Svelte-Specific Patterns
-- **Subscriptions**: Use `store.subscribe(value => state = value)` in `onMount()` or reactive statements
-- **Conditionals**: Svelte conditional blocks with nesting/indentation matters (common beginner error)
-- **Loops**: Svelte each blocks with keys - always include `(key)` for reactivity
-- **Global Styles**: Use `:global()` pseudo-selector in `<style>` blocks; avoid `<style global>`
+### App registration pattern
 
----
+Apps are declared in `src/lib/appRegistry.ts` as a `Map<string, AppMetadata>`.
+
+Current registered apps:
+
+- TextManipulator
+- FileMangler
+- Jukebox
+- TasqueMangler
+- Settings
+- Ultrakill
+
+Taskbar start menu renders from the registry and launches by app key.
 
 ## Development Workflow
 
-### Running the Project
+Use these scripts from `package.json`:
+
 ```bash
-npm run dev        # Start Vite dev server (localhost:5173)
-npm run build      # Production build
-npm run type-check # TypeScript type checking
-npm run lint       # ESLint (if configured)
+npm run dev
+npm run build
+npm run preview
+npm run lint
+npm run type-check
 ```
 
-### File Locations by Task
-- **Creating new app**: `src/apps/[AppName]/[AppName].svelte`
-- **Adding UI component**: `src/components/[Component].svelte`
-- **Adding state**: `src/state/[featureStore].ts`
-- **Adding types**: `src/types/[feature].ts`
-- **Global styles**: `src/app.css` (already configured with gradient, removed default flex centering)
+## Conventions For Changes
 
-### CSS Gotchas
-- Taskbar is `position: fixed; bottom: 0; z-index: 1000`
-- Windows should avoid overlapping taskbar (add `padding-bottom: 50px` or adjust window min-y)
-- Desktop uses `pointer-events: none` so clicks pass through to windows
-- Body background is gradient in `app.css`, not in component styles
+### Svelte patterns
 
----
+- Prefer store update methods over direct mutation
+- Use keyed each blocks for window/app lists
+- Keep global style behavior in `src/app.css` or `:global(...)`
+- Preserve taskbar and window layering behavior (`z-index`, pointer-event pass-through)
 
-## Common Patterns & Conventions
+### Adding a new app
 
-### Creating a New Application
-1. Create folder: `src/apps/[AppName]/`
-2. Create component: `src/apps/[AppName]/[AppName].svelte` with `<script lang="ts">` block
-3. Register in `src/lib/appRegistry.ts`:
-   ```typescript
-   import [AppName] from '../apps/[AppName]/[AppName].svelte';
-   
-   export const appRegistry: Map<string, AppMetadata> = new Map([
-     ['[AppName]', {
-       name: '[AppName]',
-       title: '[Display Name]',
-       icon: 'icon-name',
-       component: [AppName],
-       defaultWindow: { width: 800, height: 600 }
-     }],
-   ]);
-   ```
-4. Add launch button in `Taskbar.svelte` start menu
+1. Add component at `src/apps/<AppName>/<AppName>.svelte`
+2. Register it in `src/lib/appRegistry.ts` with `name`, `title`, `component`, and `defaultWindow`
+3. Verify it appears automatically in the Start menu
 
-### Window Lifecycle
-```typescript
-// Opening
-windowStore.openWindow({
-  id: `app-${Date.now()}`,
-  title: 'App Title',
-  appName: 'AppName', // Must match registry key
-  x: 100, y: 100,
-  width: 800, height: 600,
-  zIndex: 100,
-  isMinimized: false,
-  isMaximized: false,
-  isFocused: true,
-});
+### Window behavior expectations
 
-// Closing
-windowStore.closeWindow(windowId);
+- Focus should bring a window to front (`zIndex = max + 1`)
+- Minimized windows should not render content in `Window.svelte`
+- Maximized windows should account for the taskbar height
 
-// Focusing (brings to front)
-windowStore.focusWindow(windowId);
-```
+## Known Issues Snapshot (Keep Fresh)
 
-### Store Subscription Example
-```svelte
-<script lang="ts">
-  import { windowStore } from '../state/windowStore';
-  
-  let windows: any[] = [];
-  
-  // Reactive subscription
-  windowStore.subscribe(w => {
-    windows = w;
-  });
-</script>
-```
+From current README and code comments:
 
----
+- Text editor has persistence edge cases (remember-last-file and font size behavior)
+- File manager still uses mock storage and has incomplete folder/manual-path features
+- Jukebox is still mostly placeholder-level
+- Some settings and preferences may not persist as expected in all cases
+- Desktop background contrast can reduce text readability
 
-## Learning Resources
+Whenever these are resolved, update this file and README together.
 
-- **Guide**: Open `guide.html` in browser for interactive documentation
-- **Svelte Docs**: https://svelte.dev/docs
-- **TypeScript Handbook**: https://www.typescriptlang.org/docs/
-- **Vite**: https://vitejs.dev/
-- **Inspiration**: ArcOS v6 (https://github.com/ArcOS-Project/v6)
+## Guidance Style For This User
 
----
-
-## Current Known Issues & TODOs
-- **File manager app**: Created (FileMangler) - works, needs enhancements (delete, rename, create folder)
-- **CSS positioning**: Windows may overlap taskbar - needs padding adjustment
-- **Jukebox audio player**: Currently placeholder, needs full implementation
-- **TextManipulator enhancements**: Undo/Redo and Find & Replace now implemented, with "Remember Last File" preference in Applications settings
-Also check the code, README and with the user for latest known issues.
-
----
-
-## Guidance Style for This User
-
-- **Always explain first** - Describe what needs to happen before showing code
-- **Reference the guide** - Link to `guide.html` sections for learning context
-- **No auto-fixes** - User implements to learn; only fix syntax errors breaking compilation
-- **Ask clarifying questions** - When visual issues reported, ask what specifically looks wrong
+- Explain first, then show code
+- Keep steps concrete and beginner-friendly
+- Point to `guide.html` for project refresher context
+- Ask clarifying questions for UI/UX issues before changing visuals
