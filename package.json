@@ -13,11 +13,11 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "concurrently": "^9.2.1",
-    "vite": "^7.2.4",
+    "vite": ">=7.3.2",
     "svelte": "^5.55.5"
   },
   "dependencies": {
     "lucide-svelte": "^0.564.0",
-    "svelte-spa-router": "^4.0.1"
+    "svelte-spa-router": "^5.0.1"
   }
 }
