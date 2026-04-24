@@ -17,7 +17,7 @@
     "svelte": "^5.55.5"
   },
   "dependencies": {
-    "lucide-svelte": "^0.564.0",
+    "lucide-svelte": "^1.0.1",
     "svelte-spa-router": "^5.0.1"
   }
 }
