@@ -13,6 +13,7 @@ export const appRegistry: Map<string, AppMetadata> = new Map([
      title: 'Text Changer',
      icon: 'file-text',
      component: TextManipulator,
+     system: false,
      defaultWindow: { width: 800, height: 600 }
    }],
    ['FileMangler', {
@@ -20,6 +21,7 @@ export const appRegistry: Map<string, AppMetadata> = new Map([
      title: 'Cow Mangler 3000',
      icon: 'folder',
      component: FileMangler,
+     system: false,
      defaultWindow: { width: 1024, height: 768 }
    }],
    ['Jukebox', {
@@ -27,6 +29,7 @@ export const appRegistry: Map<string, AppMetadata> = new Map([
     title: 'Jukebox',
     icon: 'music',
     component: Jukebox,
+    system: false,
     defaultWindow: { width: 640, height: 480 },
    }],
    ['TasqueMangler', {
@@ -34,6 +37,7 @@ export const appRegistry: Map<string, AppMetadata> = new Map([
     title: 'Tasque Mangler',
     icon: 'tasks',
     component: TasqueMangler,
+    system: false,
     defaultWindow: { width: 800, height: 600 }
   }],
   ['Settings', {
@@ -41,6 +45,7 @@ export const appRegistry: Map<string, AppMetadata> = new Map([
     title: 'Settings',
     icon: 'cog',
     component: Settings,
+    system: false,
     defaultWindow: { width: 800, height: 600 }
    }],
    ['Ultrakill', {
@@ -48,6 +53,7 @@ export const appRegistry: Map<string, AppMetadata> = new Map([
     title: 'Ultrakill',
     icon: '⚡',
     component: Ultrakill,
+    system: true,
     defaultWindow: { width: 600, height: 500 }
    }],
    ['PictureViewer', {
@@ -55,6 +61,7 @@ export const appRegistry: Map<string, AppMetadata> = new Map([
     title: 'Picture Viewer',
     icon: 'image',
     component: PictureViewer,
+    system: true,
     defaultWindow: { width: 1024, height: 768 }
    }]
 ]);

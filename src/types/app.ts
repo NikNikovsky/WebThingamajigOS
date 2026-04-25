@@ -3,6 +3,7 @@ export interface AppMetadata {
   title: string;
   icon: string;
   component: any;  // Svelte component
+  system?: boolean;
   defaultWindow: {
     width: number;
     height: number;

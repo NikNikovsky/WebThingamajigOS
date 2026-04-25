@@ -65,6 +65,18 @@ import { settingsStore } from '../../state/settingsStore';
     </div>
   </div>
 
+  <div class="setting-group checkbox">
+  <label for="show-system-apps">
+    <input
+      id="show-system-apps"
+      type="checkbox"
+      bind:checked={prefs.showSystemApps}
+      on:change={handleChange}
+    />
+    <span>Show System apps in start menu</span>
+  </label>
+</div>
+
   <div class="content-area">
     <!-- Appearance Section -->
     {#if selectedSection === 'appearance'}

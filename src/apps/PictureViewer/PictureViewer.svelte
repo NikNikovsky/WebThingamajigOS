@@ -9,13 +9,16 @@
     size: string;
   };
 
-  let selectedFile: SelectedFile | null = null;
+let selectedFile: SelectedFile | null = null;
+let hasInitializedFile = false;
 
-  fileDialogStore.subscribe((state) => {
-    if (state.requestedBy === 'PictureViewer' && state.selectedFile) {
-      selectedFile = state.selectedFile;
-    }
-  });
+fileDialogStore.subscribe((state) => {
+  // Bind this window once to its initial file and ignore future global updates.
+  if (!hasInitializedFile && state.requestedBy === 'PictureViewer' && state.selectedFile) {
+    selectedFile = state.selectedFile;
+    hasInitializedFile = true;
+  }
+});
 </script>
 
 <div class="picture-viewer">
@@ -25,7 +28,7 @@
       <span>{selectedFile.size}</span>
     </div>
 
-    {#if selectedFile.content}
+{#if selectedFile.content && !selectedFile.content.startsWith('[')}
       <div class="image-wrap">
         <img src={selectedFile.content} alt={selectedFile.name} />
       </div>

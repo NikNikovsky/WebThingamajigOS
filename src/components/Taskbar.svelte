@@ -1,11 +1,16 @@
 <script lang="ts">
-  import { systemStore } from '../state/systemStore';
+  import { preferencesStore } from '../state/preferencesStore';
   import { windowStore } from '../state/windowStore';
   import { appRegistry } from '../lib/appRegistry';
   import { onMount } from 'svelte';
-  import {scale} from 'svelte/transition';
+  import { scale } from 'svelte/transition';
 
   let showStartMenu = false;
+  let showSystemApps = false;
+
+  preferencesStore.subscribe((prefs) => {
+    showSystemApps = prefs.showSystemApps;
+  });
 
   function getTime(): string {
     const now = new Date();
@@ -15,14 +20,11 @@
   let currentTime = getTime();
   let timerID: number;
 
-  // 1000ms = 1s
-onMount(() => {
-    // Update time every single second
+  onMount(() => {
     timerID = window.setInterval(() => {
       currentTime = getTime();
     }, 1000);
 
-    // cleanup
     return () => {
       clearInterval(timerID);
     };
@@ -52,6 +54,11 @@ onMount(() => {
       showStartMenu = false;
     }
   }
+
+  function getVisibleApps() {
+    return Array.from(appRegistry.entries()).filter(([, app]) => showSystemApps || !app.system);
+    
+  }
 </script>
 
 <svelte:window on:click={({ target }) => {
@@ -60,6 +67,16 @@ onMount(() => {
     showStartMenu = false;
   }
 }} />
+
+{#each getVisibleApps() as [appName, app]}
+  <button class="app-button" on:click={() => launchApp(appName)}>
+    {app.title}
+  </button>
+{:else}
+  <p style="color: #999; padding: 10px; text-align: center; font-size: 12px;">
+    No apps installed yet or they have not been detected.
+  </p>
+{/each}
 
 <div class="taskbar">
   <div class="taskbar-left">

@@ -25,6 +25,7 @@
   let currentMatchIndex = 0;
   let selectedMatchStart = -1;
   let selectedMatchEnd = -1;
+  let hasInitializedFile = false;
  
  function toggleMenu(menuName: string) {
   activeMenu = activeMenu === menuName ? null : menuName;
@@ -150,28 +151,26 @@ function newDocument() {
 }
 
 fileDialogStore.subscribe(dialog => {
-  if (dialog.selectedFile && dialog.requestedBy === 'TextManipulator') {
-    // Create a unique ID for this file to prevent reprocessing
-    const fileId = `${dialog.selectedFile.path}-${dialog.selectedFile.name}-${Date.now()}`;
-    if (lastProcessedFileId !== fileId) {
-      lastProcessedFileId = fileId;
-      content.set(dialog.selectedFile.content);
-      fileName = dialog.selectedFile.name;
-      filePath = dialog.selectedFile.path;
-      isSaved = true;
-      history = [dialog.selectedFile.content];
-      historyIndex = 0;
-      setCurrentlyOpen(dialog.selectedFile);
-      windowStore.updateWindowTitle(windowId, `Text Changer - ${fileName}`);
-      // Save this as the last opened file
-      lastFileStore.setLastFile({
-        name: dialog.selectedFile.name,
-        path: dialog.selectedFile.path,
-        content: dialog.selectedFile.content,
-        type: dialog.selectedFile.type,
-        size: dialog.selectedFile.size
-      });
-    }
+  if (!hasInitializedFile && dialog.selectedFile && dialog.requestedBy === 'TextManipulator') {
+    hasInitializedFile = true;
+
+    content.set(dialog.selectedFile.content);
+    fileName = dialog.selectedFile.name;
+    filePath = dialog.selectedFile.path;
+    isSaved = true;
+    history = [dialog.selectedFile.content];
+    historyIndex = 0;
+
+    setCurrentlyOpen(dialog.selectedFile);
+    windowStore.updateWindowTitle(windowId, `Text Changer - ${fileName}`);
+
+    lastFileStore.setLastFile({
+      name: dialog.selectedFile.name,
+      path: dialog.selectedFile.path,
+      content: dialog.selectedFile.content,
+      type: dialog.selectedFile.type,
+      size: dialog.selectedFile.size
+    });
   }
 });
 

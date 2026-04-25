@@ -7,6 +7,7 @@ export interface Preferences {
   windowSnap: boolean;
   fontSize: 'small' | 'normal' | 'large';
   rememberLastFile: boolean;
+  showSystemApps: boolean;
 }
 const defaultPreferences: Preferences = {
   theme: 'dark',
@@ -17,6 +18,7 @@ const defaultPreferences: Preferences = {
   windowSnap: true,
   fontSize: 'normal',
   rememberLastFile: true,
+  showSystemApps: false,
 };
 
 export default defaultPreferences;

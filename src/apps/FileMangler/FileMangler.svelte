@@ -47,12 +47,12 @@ const mockFileSystem: { [key: string]: typeof files } = {
   ],
   '/Pictures': [
     { id: 6, name: 'good moaning.jpg', type: 'file', size: '53.4 KB', modified: '2025-04-09' },
-    { id: 7, name: 'genocide.PNG', type: 'file', size: '141 KB', modified: '2025-04-09' },
+    { id: 7, name: 'genocide.png', type: 'file', size: '141 KB', modified: '2025-04-09' },
   ],
 };
 const mockImageSources: { [key: string]: string } = {
-  '/Pictures/good moaning.jpg': '/images/good-moaning.jpg',
-  '/Pictures/genocide.png': '/images/genocide.png',
+  '/Pictures/good moaning.jpg': '/fatuus/images/good-moaning.jpg',
+  '/Pictures/genocide.png': '/fatuus/images/genocide.png',
 };
 function navigateToFolder(folderName: string) {
   if (currentPath === '/') {
@@ -95,7 +95,9 @@ function handleFileDoubleClick(file: { id: number; name: string; type: string; s
       
       // Get file content from mock contents
       const filePath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
-      const content = mockFileContents[filePath] || '[File content not found]';
+     const content = appName === 'PictureViewer'
+? (mockImageSources[filePath] || '')
+: (mockFileContents[filePath] || '[File content not found]');
       
       // Set file in dialog store so the app can receive it
       fileDialogStore.update(state => ({
