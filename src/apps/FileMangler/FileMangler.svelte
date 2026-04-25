@@ -21,6 +21,7 @@ const mockFileSystem: { [key: string]: typeof files } = {
   '/': [
     { id: 1, name: 'Documents', type: 'folder', size: '-', modified: '2025-11-01' },
     { id: 2, name: 'Pictures', type: 'folder', size: '-', modified: '2025-11-01' },
+    { id: 8, name: 'Music', type: 'folder', size: '-', modified: '2025-11-01' },
     { id: 3, name: 'how to build a nuclear reactor.txt', type: 'file', size: '5 KB', modified: '2025-10-28' },
   ],
   '/Documents': [
@@ -31,6 +32,11 @@ const mockFileSystem: { [key: string]: typeof files } = {
     { id: 6, name: 'good moaning.jpg', type: 'file', size: '53.4 KB', modified: '2025-04-09' },
     { id: 7, name: 'genocide.png', type: 'file', size: '141 KB', modified: '2025-04-09' },
   ],
+  '/Music': [
+  { id: 9, name: 'Mister_Sandman.mp3', type: 'file', size: '3.8 MB', modified: '2026-04-25' },
+  { id: 10, name: 'DeviatedMachinations.ogg', type: 'file', size: '5.1 MB', modified: '2026-04-25' },
+],
+
 };
 function navigateToFolder(folderName: string) {
   if (currentPath === '/') {

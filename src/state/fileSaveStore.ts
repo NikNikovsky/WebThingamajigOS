@@ -33,6 +33,8 @@ Mock content for a zipped archive.`,
 
     '/Pictures/good moaning.jpg': basePath + '/images/good-moaning.jpg',
     '/Pictures/genocide.png': basePath + '/images/genocide.png',
+    '/Music/Mister_Sandman.mp3': basePath + '/music/Mister_Sandman.mp3',
+    '/Music/DeviatedMachinations.ogg': basePath + '/music/DeviatedMachinations.ogg',
   };
 
   const { subscribe, set, update } = writable(mockFileContents);
