@@ -13,11 +13,13 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "concurrently": "^9.2.1",
-    "vite": ">=8.0.10",
-    "svelte": "^5.55.5"
+    "svelte": "^5.55.5",
+    "vite": ">=8.0.10"
   },
   "dependencies": {
+    "jsmediatags": "^3.9.7",
     "lucide-svelte": "^1.0.1",
+    "music-metadata-browser": "^0.3.1",
     "svelte-spa-router": "^5.0.1"
   }
 }

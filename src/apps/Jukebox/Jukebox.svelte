@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fileDialogStore } from '../../state/fileDialogStore';
-
+  import { parseBlob } from 'music-metadata-browser';
   export let windowId: string;
 
   type SelectedFile = {
@@ -16,6 +16,11 @@
     path: string;
     src: string;
     size: string;
+    title: string;
+    artist: string;
+    album: string;
+    duration: number;
+    metadataLoaded: boolean;
   };
 
   const AUDIO_EXTENSIONS = ['.mp3', '.wav', '.ogg', '.flac', '.m4a'];
@@ -38,6 +43,73 @@
     return AUDIO_EXTENSIONS.includes(ext);
   }
 
+  function stripExtension(fileName: string): string {
+    const dot = fileName.lastIndexOf('.');
+    return dot === -1 ? fileName : fileName.substring(0, dot);
+  }
+
+function parseFilenameMetadata(fileName: string): { title: string; artist: string } {
+  const base = stripExtension(fileName).replace(/_/g, ' ');
+  const parts = base.split(' - ');
+  if (parts.length >= 2) {
+    return {
+      artist: parts[0].trim() || 'Unknown Artist',
+      title: parts.slice(1).join(' - ').trim() || base
+    };
+  }
+  return {
+    artist: 'Unknown Artist',
+    title: base
+  };
+}
+
+async function loadTrackMetadata(trackPath: string): Promise<void> {
+  const index = tracks.findIndex((t) => t.path === trackPath);
+  if (index === -1 || tracks[index].metadataLoaded) return;
+
+  const current = tracks[index];
+
+  try {
+    const response = await fetch(current.src);
+    if (!response.ok) {
+      throw new Error(`Fetch failed with status ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const metadata = await parseBlob(blob);
+
+    const title =
+      metadata.common.title ||
+      current.title;
+
+    const artist =
+      metadata.common.artist ||
+      (metadata.common.artists && metadata.common.artists.length > 0
+        ? metadata.common.artists.join(', ')
+        : current.artist);
+
+    const album =
+      metadata.common.album ||
+      current.album;
+
+    tracks[index] = {
+      ...tracks[index],
+      title,
+      artist,
+      album,
+      metadataLoaded: true
+    };
+    tracks = [...tracks];
+  } catch (error) {
+    console.warn('Metadata parse failed for', current.name, error);
+    tracks[index] = {
+      ...tracks[index],
+      metadataLoaded: true
+    };
+    tracks = [...tracks];
+  }
+}
+
   function formatTime(seconds: number): string {
     if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
     const mins = Math.floor(seconds / 60);
@@ -51,7 +123,7 @@
     currentIndex = index;
     const track = tracks[currentIndex];
     isReady = false;
-    status = `Loading: ${track.name}`;
+    status = `Loading: ${track.artist} - ${track.title}`;
 
     audioEl.src = track.src;
     audioEl.load();
@@ -66,20 +138,33 @@
   function addOrActivateTrack(file: SelectedFile): void {
     const existingIndex = tracks.findIndex((t) => t.path === file.path);
 
-    if (existingIndex !== -1) {
+    if (!file.content || file.content.startsWith('[')) {
+  status = `Missing audio source for ${file.name}.`;
+  return;
+}
+if (existingIndex !== -1) {
       setCurrentTrack(existingIndex, true);
+      void loadTrackMetadata(tracks[existingIndex].path);
       return;
     }
 
+    const fallback = parseFilenameMetadata(file.name);
     const newTrack: Track = {
       name: file.name,
       path: file.path,
       src: file.content,
-      size: file.size
+      size: file.size,
+      title: fallback.title,
+      artist: fallback.artist,
+      album: 'Unknown Album',
+      duration: 0,
+      metadataLoaded: false
     };
 
     tracks = [...tracks, newTrack];
-    setCurrentTrack(tracks.length - 1, true);
+    const newIndex = tracks.length - 1;
+    setCurrentTrack(newIndex, true);
+    void loadTrackMetadata(newTrack.path);
   }
 
   function togglePlayPause(): void {
@@ -112,9 +197,18 @@
 
   function onLoadedMetadata(): void {
     if (!audioEl) return;
+
     duration = audioEl.duration || 0;
     isReady = true;
-    status = currentIndex >= 0 ? `Now playing: ${tracks[currentIndex].name}` : status;
+
+    if (currentIndex >= 0) {
+      tracks[currentIndex] = {
+        ...tracks[currentIndex],
+        duration
+      };
+      tracks = [...tracks];
+      status = `Now playing: ${tracks[currentIndex].artist} - ${tracks[currentIndex].title}`;
+    }
   }
 
   function onTimeUpdate(): void {
@@ -168,15 +262,15 @@
 </script>
 
 <div class="jukebox">
-  <audio
-    bind:this={audioEl}
-    on:loadedmetadata={onLoadedMetadata}
-    on:timeupdate={onTimeUpdate}
-    on:play={onPlay}
-    on:pause={onPause}
-    on:ended={onEnded}
-    on:error={onError}
-  />
+<audio
+  bind:this={audioEl}
+  on:loadedmetadata={onLoadedMetadata}
+  on:timeupdate={onTimeUpdate}
+  on:play={onPlay}
+  on:pause={onPause}
+  on:ended={onEnded}
+  on:error={onError}
+></audio>
 
   <div class="header">
     <h2>Jukebox</h2>
@@ -185,8 +279,15 @@
 
   <div class="now-playing">
     {#if currentIndex >= 0}
-      <strong>{tracks[currentIndex].name}</strong>
-      <span>{tracks[currentIndex].size}</span>
+      <div class="np-left">
+        <strong>{tracks[currentIndex].title}</strong>
+        <span>{tracks[currentIndex].artist}</span>
+        <small>{tracks[currentIndex].album}</small>
+      </div>
+      <div class="np-right">
+        <span>{tracks[currentIndex].size}</span>
+        <small>{formatTime(tracks[currentIndex].duration || duration)}</small>
+      </div>
     {:else}
       <strong>No track selected</strong>
       <span>Use FileMangler to open a music file</span>
@@ -239,8 +340,13 @@
           class:active={i === currentIndex}
           on:click={() => playTrack(i)}
         >
-          <span>{track.name}</span>
-          <small>{track.size}</small>
+          <div class="track-main">
+            <span>{track.title}</span>
+            <small>{track.artist}</small>
+          </div>
+          <div class="track-meta">
+            <small>{track.duration > 0 ? formatTime(track.duration) : '--:--'}</small>
+          </div>
         </button>
       {/each}
     {/if}
@@ -278,6 +384,39 @@
     border: 1px solid rgba(159, 232, 255, 0.3);
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.18);
+  }
+
+  .np-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .np-left strong,
+  .track-main span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .np-left span,
+  .track-main small {
+    color: #c9d8ee;
+    font-size: 12px;
+  }
+
+  .np-left small {
+    color: #9fb4cf;
+    font-size: 11px;
+  }
+
+  .np-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    color: #bfd0e5;
   }
 
   .controls {
@@ -350,6 +489,7 @@
     display: flex;
     justify-content: space-between;
     gap: 8px;
+    align-items: center;
   }
 
   .track.active {
@@ -357,8 +497,17 @@
     background: rgba(159, 232, 255, 0.22);
   }
 
-  .track small {
+  .track-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .track-meta {
     color: #bfd0e5;
+    margin-left: 8px;
   }
 
   .empty {
