@@ -67,24 +67,13 @@
     showStartMenu = false;
   }
 }} />
-
-{#each getVisibleApps() as [appName, app]}
-  <button class="app-button" on:click={() => launchApp(appName)}>
-    {app.title}
-  </button>
-{:else}
-  <p style="color: #999; padding: 10px; text-align: center; font-size: 12px;">
-    No apps installed yet or they have not been detected.
-  </p>
-{/each}
-
 <div class="taskbar">
   <div class="taskbar-left">
     <button class="start-button" on:click={toggleStartMenu}>📁 Start</button>
     {#if showStartMenu}
       <div class="start-menu" role="menu" transition:scale={{ duration: 300, start: 0.7 }}>
         <div class="menu-header">Applications</div>
-        {#each Array.from(appRegistry.entries()) as [appName, app]}
+        {#each getVisibleApps() as [appName, app]}
           <button class="app-button" on:click={() => launchApp(appName)}>
             {app.title}
           </button>

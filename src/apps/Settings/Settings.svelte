@@ -65,18 +65,6 @@ import { settingsStore } from '../../state/settingsStore';
     </div>
   </div>
 
-  <div class="setting-group checkbox">
-  <label for="show-system-apps">
-    <input
-      id="show-system-apps"
-      type="checkbox"
-      bind:checked={prefs.showSystemApps}
-      on:change={handleChange}
-    />
-    <span>Show System apps in start menu</span>
-  </label>
-</div>
-
   <div class="content-area">
     <!-- Appearance Section -->
     {#if selectedSection === 'appearance'}
@@ -174,24 +162,33 @@ import { settingsStore } from '../../state/settingsStore';
 
     <!-- Applications Section -->
     {#if selectedSection === 'apps'}
-      <div class="section">
-        <h2>Application Settings</h2>
+<div class="subsection">
+  <h3>Text Manipulator</h3>
+  <div class="setting-group checkbox">
+    <label for="remember-last-file">
+      <input
+        id="remember-last-file"
+        type="checkbox"
+        bind:checked={prefs.rememberLastFile}
+        on:change={handleChange}
+      />
+      <span>Remember Last Opened File</span>
+    </label>
+  </div>
 
-        <div class="subsection">
-          <h3>Text Manipulator</h3>
-          <div class="setting-group checkbox">
-            <label for="remember-last-file">
-              <input
-                id="remember-last-file"
-                type="checkbox"
-                bind:checked={prefs.rememberLastFile}
-                on:change={handleChange}
-              />
-              <span>Remember Last Opened File</span>
-            </label>
-          </div>
-        </div>
-      </div>
+  <h3>Start Menu</h3>
+  <div class="setting-group checkbox">
+    <label for="show-system-apps">
+      <input
+        id="show-system-apps"
+        type="checkbox"
+        bind:checked={prefs.showSystemApps}
+        on:change={handleChange}
+      />
+      <span>Show System Apps in Start Menu</span>
+    </label>
+  </div>
+</div>
     {/if}
 
     <!-- System & Language Section -->

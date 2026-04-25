@@ -25,7 +25,6 @@
   let currentMatchIndex = 0;
   let selectedMatchStart = -1;
   let selectedMatchEnd = -1;
-  let hasInitializedFile = false;
  
  function toggleMenu(menuName: string) {
   activeMenu = activeMenu === menuName ? null : menuName;
@@ -150,9 +149,16 @@ function newDocument() {
   windowStore.updateWindowTitle(windowId, 'Text Changer - Entitled.txt');
 }
 
-fileDialogStore.subscribe(dialog => {
-  if (!hasInitializedFile && dialog.selectedFile && dialog.requestedBy === 'TextManipulator') {
-    hasInitializedFile = true;
+fileDialogStore.subscribe((dialog) => {
+  if (
+    dialog.requestedBy === 'TextManipulator' &&
+    dialog.requestedByWindowId === windowId &&
+    !dialog.isOpen &&
+    dialog.selectedFile
+  ) {
+    const fileId = `${dialog.selectedFile.path}-${dialog.selectedFile.name}-${dialog.selectedFile.content}`;
+    if (fileId === lastProcessedFileId) return;
+    lastProcessedFileId = fileId;
 
     content.set(dialog.selectedFile.content);
     fileName = dialog.selectedFile.name;
@@ -199,7 +205,7 @@ onMount(() => {
       historyIndex = 0;
       setCurrentlyOpen(lastFile);
       windowStore.updateWindowTitle(windowId, `Text Changer - ${fileName}`);
-      lastProcessedFileId = `${lastFile.path}-${lastFile.name}`;
+      lastProcessedFileId = `${lastFile.path}-${lastFile.name}-${lastFile.content}`;
     }
   }
 });
@@ -234,7 +240,7 @@ function saveFile() {
 }
 
 function openFile() {
-  openFileDialog('TextManipulator');
+  openFileDialog('TextManipulator', windowId);
   activeMenu = null;
 }
 

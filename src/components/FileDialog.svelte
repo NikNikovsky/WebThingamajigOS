@@ -25,7 +25,7 @@
     ],
     '/Pictures': [
       { id: 6, name: 'good moaning.jpg', type: 'file', size: '53.4 KB', modified: '2025-04-09' },
-      { id: 7, name: 'IsaacFurry.PNG', type: 'file', size: '141 KB', modified: '2025-04-09' },
+      { id: 7, name: 'genocide.png', type: 'file', size: '141 KB', modified: '2025-04-09' },
     ],
   };
 
@@ -68,7 +68,11 @@
       navigateToFolder(file.name);
     } else {
       // File selected - get its content from savedFiles (fileSaveStore)
-      const filePath = currentPath === '/' ? '/' + file.name : currentPath + '/' + file.name;
+      const extension = file.name.includes('.') ? file.name.substring(file.name.lastIndexOf('.')).toLowerCase() : '';
+      const blockedForTextEditor = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
+      if (dialog?.requestedBy === 'TextManipulator' && blockedForTextEditor.includes(extension)) {
+      return;
+}     const filePath = currentPath === '/' ? '/' + file.name : currentPath + '/' + file.name;
       const content = savedFiles[filePath] || `[File content for ${file.name}]`;
       
       fileDialogStore.update(state => ({

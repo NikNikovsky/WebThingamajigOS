@@ -2,23 +2,27 @@ import { writable } from 'svelte/store';
 
 export interface FileDialogRequest {
   isOpen: boolean;
-  requestedBy: string | null;  // app name requesting
+  requestedBy: string | null;
+  requestedByWindowId: string | null;
   selectedFile: { name: string; path: string; content: string; type: string; size: string } | null;
-  currentlyOpen: { name: string; path: string; content: string; type: string; size: string } | null;  // currently open file in app
+  currentlyOpen: { name: string; path: string; content: string; type: string; size: string } | null;
 }
 
 export const fileDialogStore = writable<FileDialogRequest>({
   isOpen: false,
   requestedBy: null,
+  requestedByWindowId: null,
   selectedFile: null,
   currentlyOpen: null,
 });
 
-export function openFileDialog(appName: string) {
+export function openFileDialog(appName: string, windowId: string | null = null) {
   fileDialogStore.update((state: FileDialogRequest) => ({
     ...state,
     isOpen: true,
-    requestedBy: appName
+    requestedBy: appName,
+    requestedByWindowId: windowId,
+    selectedFile: null
   }));
 }
 

@@ -4,36 +4,18 @@
     import { windowStore } from '../../state/windowStore';
     import { appRegistry } from '../../lib/appRegistry';
     import { fileDialogStore } from '../../state/fileDialogStore';
+    import { fileSaveStore } from '../../state/fileSaveStore';
     
     let files: { id: number; name: string; type: string; size: string; modified: string }[] = [];
     let currentPath: string = '/';
+    let savedFiles: { [key: string]: string } = {};
+    fileSaveStore.subscribe((fileContents) => {
+    savedFiles = fileContents;
+});
     
 onMount(() => {
   loadFiles();  // Load initial files
 });
-
-// Mock file contents
-const mockFileContents: { [key: string]: string } = {
-  '/how to build a nuclear reactor.txt': `dont();`,
-  
-  '/Documents/User Guide.pdf': `# User Guide
-
-Welcome to Fatuus OS!
-
-This is a mock PDF file displayed as text.
-In a real implementation, you'd need a PDF viewer.
-
-## Getting Started
-- Use the File Manager to browse files
-- Double-click files to open them
-- Use the Text Editor for text files
-- Use the Jukebox for audio files
-
-Have fun exploring!`,
-
-  '/Documents/Evidence that Spy had contact with Scout\'s mother.zip': `[This is a zip file - cannot be displayed as text]
-Mock content for a zipped archive.`,
-};
 
 const mockFileSystem: { [key: string]: typeof files } = {
   '/': [
@@ -49,10 +31,6 @@ const mockFileSystem: { [key: string]: typeof files } = {
     { id: 6, name: 'good moaning.jpg', type: 'file', size: '53.4 KB', modified: '2025-04-09' },
     { id: 7, name: 'genocide.png', type: 'file', size: '141 KB', modified: '2025-04-09' },
   ],
-};
-const mockImageSources: { [key: string]: string } = {
-  '/Pictures/good moaning.jpg': '/fatuus/images/good-moaning.jpg',
-  '/Pictures/genocide.png': '/fatuus/images/genocide.png',
 };
 function navigateToFolder(folderName: string) {
   if (currentPath === '/') {
@@ -94,37 +72,38 @@ function handleFileDoubleClick(file: { id: number; name: string; type: string; s
       const app = appRegistry.get(appName);
       
       // Get file content from mock contents
-      const filePath = currentPath === '/' ? `/${file.name}` : `${currentPath}/${file.name}`;
-     const content = appName === 'PictureViewer'
-? (mockImageSources[filePath] || '')
-: (mockFileContents[filePath] || '[File content not found]');
-      
-      // Set file in dialog store so the app can receive it
-      fileDialogStore.update(state => ({
-        ...state,
-        requestedBy: appName,
-        selectedFile: {
-          name: file.name,
-          path: filePath,
-          content: content,
-          type: file.type,
-          size: file.size
-        }
-      }));
-      
-      windowStore.openWindow({
-        id: `${appName}-${Date.now()}`,
-        title: app?.title || appName,
-        appName: appName,
-        x: Math.random() * 200 + 100,
-        y: Math.random() * 200 + 100,
-        width: app?.defaultWindow.width || 800,
-        height: app?.defaultWindow.height || 600,
-        zIndex: 100,
-        isMinimized: false,
-        isMaximized: false,
-        isFocused: true,
-      });
+const filePath = currentPath === '/' ? '/' + file.name : currentPath + '/' + file.name;
+const content = savedFiles[filePath] || '[File content not found]';
+
+const windowId = `${appName}-${Date.now()}`;
+
+fileDialogStore.update((state) => ({
+  ...state,
+  requestedBy: appName,
+  requestedByWindowId: windowId,
+  isOpen: false,
+  selectedFile: {
+    name: file.name,
+    path: filePath,
+    content: content,
+    type: file.type,
+    size: file.size
+  }
+}));
+
+windowStore.openWindow({
+  id: windowId,
+  title: app?.title || appName,
+  appName: appName,
+  x: Math.random() * 200 + 100,
+  y: Math.random() * 200 + 100,
+  width: app?.defaultWindow.width || 800,
+  height: app?.defaultWindow.height || 600,
+  zIndex: 100,
+  isMinimized: false,
+  isMaximized: false,
+  isFocused: true
+});
     }
   }
 }
