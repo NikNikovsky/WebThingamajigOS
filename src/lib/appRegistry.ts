@@ -5,6 +5,7 @@ import Jukebox from '../apps/Jukebox/Jukebox.svelte';
 import TasqueMangler from '../apps/TasqueMangler/TasqueMangler.svelte';
 import Settings from '../apps/Settings/Settings.svelte';
 import Ultrakill from '../apps/Ultrakill/Ultrakill.svelte';
+import PictureViewer from '../apps/PictureViewer/PictureViewer.svelte';
 
 export const appRegistry: Map<string, AppMetadata> = new Map([
    ['TextManipulator', {
@@ -48,6 +49,13 @@ export const appRegistry: Map<string, AppMetadata> = new Map([
     icon: '⚡',
     component: Ultrakill,
     defaultWindow: { width: 600, height: 500 }
+   }],
+   ['PictureViewer', {
+    name: 'PictureViewer',
+    title: 'Picture Viewer',
+    icon: 'image',
+    component: PictureViewer,
+    defaultWindow: { width: 1024, height: 768 }
    }]
 ]);
 

@@ -18,7 +18,11 @@ export const fileAssociations: Map<string, string> = new Map([
   ['.svelte', 'TextManipulator'],
   
   // Image files
-  
+  ['.png', 'PictureViewer'],
+  ['.jpg', 'PictureViewer'],
+  ['.jpeg', 'PictureViewer'],
+  ['.gif', 'PictureViewer'],
+  ['.webp', 'PictureViewer'],
   // Audio files
   ['.mp3', 'Jukebox'],
   ['.wav', 'Jukebox'],

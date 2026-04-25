@@ -47,8 +47,12 @@ const mockFileSystem: { [key: string]: typeof files } = {
   ],
   '/Pictures': [
     { id: 6, name: 'good moaning.jpg', type: 'file', size: '53.4 KB', modified: '2025-04-09' },
-    { id: 7, name: 'IsaacFurry.PNG', type: 'file', size: '141 KB', modified: '2025-04-09' },
+    { id: 7, name: 'genocide.PNG', type: 'file', size: '141 KB', modified: '2025-04-09' },
   ],
+};
+const mockImageSources: { [key: string]: string } = {
+  '/Pictures/good moaning.jpg': '/images/good-moaning.jpg',
+  '/Pictures/genocide.png': '/images/genocide.png',
 };
 function navigateToFolder(folderName: string) {
   if (currentPath === '/') {
