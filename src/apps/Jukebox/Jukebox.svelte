@@ -1,6 +1,5 @@
 <script lang="ts">
   import { fileDialogStore } from '../../state/fileDialogStore';
-  import { parseBuffer } from 'music-metadata-browser';
   export let windowId: string;
 
   type SelectedFile = {
@@ -35,6 +34,47 @@
   let currentTime = 0;
   let volume = 0.8;
   let status = 'Open an audio file from FileMangler to start listening.';
+  let playlistQuery = '';
+let playlistScrollTop = 0;
+
+// Tune these if you change row CSS height.
+const ROW_HEIGHT = 60;
+const OVERSCAN = 6;
+const PLAYLIST_VIEWPORT_HEIGHT = 300;
+
+function handlePlaylistScroll(event: Event): void {
+  const el = event.currentTarget as HTMLElement;
+  playlistScrollTop = el.scrollTop;
+}
+
+function playTrackByPath(path: string): void {
+  const idx = tracks.findIndex((t) => t.path === path);
+  if (idx >= 0) {
+    playTrack(idx);
+  }
+}
+
+$: filteredTracks = tracks.filter((t) => {
+  if (!playlistQuery.trim()) return true;
+  const q = playlistQuery.toLowerCase();
+  return (
+    t.title.toLowerCase().includes(q) ||
+    t.artist.toLowerCase().includes(q) ||
+    t.album.toLowerCase().includes(q) ||
+    t.name.toLowerCase().includes(q)
+  );
+});
+
+$: totalRows = filteredTracks.length;
+$: totalHeight = totalRows * ROW_HEIGHT;
+$: startIndex = Math.max(Math.floor(playlistScrollTop / ROW_HEIGHT) - OVERSCAN, 0);
+$: visibleCount = Math.ceil(PLAYLIST_VIEWPORT_HEIGHT / ROW_HEIGHT) + OVERSCAN * 2;
+$: endIndex = Math.min(startIndex + visibleCount, totalRows);
+$: visibleTracks = filteredTracks.slice(startIndex, endIndex);
+
+$: topSpacer = startIndex * ROW_HEIGHT;
+$: renderedHeight = visibleTracks.length * ROW_HEIGHT;
+$: bottomSpacer = Math.max(totalHeight - topSpacer - renderedHeight, 0);
 
   function isAudioFile(name: string): boolean {
     const dot = name.lastIndexOf('.');
@@ -63,6 +103,11 @@ function parseFilenameMetadata(fileName: string): { title: string; artist: strin
   };
 }
 
+function updateStatusFromCurrentTrack(prefix: 'Now playing' | 'Paused' = 'Now playing'): void {
+  if (currentIndex < 0) return;
+  const t = tracks[currentIndex];
+  status = `${prefix}: ${t.artist} - ${t.title}`;
+}
 async function loadTrackMetadata(trackPath: string): Promise<void> {
   const index = tracks.findIndex((t) => t.path === trackPath);
   if (index === -1 || tracks[index].metadataLoaded) return;
@@ -70,36 +115,51 @@ async function loadTrackMetadata(trackPath: string): Promise<void> {
   const current = tracks[index];
 
   try {
-    const response = await fetch(current.src);
-    if (!response.ok) {
-      throw new Error(`Fetch failed with status ${response.status}`);
-    }
+    const res = await fetch(current.src);
+    if (!res.ok) throw new Error(`fetch failed: ${res.status}`);
 
-    const arrayBuffer = await response.arrayBuffer();
-    const metadata = await parseBuffer(new Uint8Array(arrayBuffer), response.headers.get('content-type') || undefined);
+    const blob = await res.blob();
 
-    const title = metadata.common.title || current.title;
-    const artist =
-      metadata.common.artist ||
-      (metadata.common.artists && metadata.common.artists.length > 0
-        ? metadata.common.artists.join(', ')
-        : current.artist);
-    const album = metadata.common.album || current.album;
+    const mod: any = await import('jsmediatags');
+    const lib = mod.default ?? mod;
 
-    tracks[index] = {
-      ...tracks[index],
-      title,
-      artist,
-      album,
-      metadataLoaded: true
-    };
-    tracks = [...tracks];
-  } catch (error) {
-    console.warn('Metadata parse failed for', current.name, error);
-    tracks[index] = {
-      ...tracks[index],
-      metadataLoaded: true
-    };
+    await new Promise<void>((resolve) => {
+      new lib.Reader(blob)
+        .setTagsToRead(['title', 'artist', 'album'])
+        .read({
+          onSuccess: (tag: any) => {
+            const tags = tag?.tags ?? {};
+            tracks[index] = {
+              ...tracks[index],
+              title: tags.title || current.title,
+              artist: tags.artist || current.artist,
+              album: tags.album || current.album,
+              metadataLoaded: true
+              
+            };
+            const safe = (v: unknown): string | undefined => {
+            if (typeof v !== 'string') return undefined;
+            const trimmed = v.trim();
+            return trimmed.length > 0 ? trimmed : undefined;
+            };
+
+            const title = safe(tags.title) ?? current.title;
+            const artist = safe(tags.artist) ?? current.artist;
+            const album = safe(tags.album) ?? current.album;
+            tracks = [...tracks];
+            resolve();
+          },
+          onError: (err: any) => {
+            status = `Metadata read failed for ${current.name}: ${err?.info || err?.type || 'unknown error'}`;
+            tracks[index] = { ...tracks[index], metadataLoaded: true };
+            tracks = [...tracks];
+            resolve();
+          }
+        });
+    });
+  } catch (error: any) {
+    status = `Metadata fetch failed for ${current.name}: ${error?.message || error}`;
+    tracks[index] = { ...tracks[index], metadataLoaded: true };
     tracks = [...tracks];
   }
 }
@@ -265,7 +325,7 @@ if (existingIndex !== -1) {
   on:ended={onEnded}
   on:error={onError}
 ></audio>
-
+</div>
   <div class="header">
     <h2>Jukebox</h2>
     <p>{status}</p>
@@ -323,16 +383,32 @@ if (existingIndex !== -1) {
     />
   </div>
 
-  <div class="playlist">
+<div class="playlist">
+  <div class="playlist-header">
     <h3>Playlist</h3>
-    {#if tracks.length === 0}
-      <p class="empty">No tracks queued yet.</p>
-    {:else}
-      {#each tracks as track, i (track.path)}
+    <input
+      class="playlist-search"
+      type="text"
+      placeholder="Search title, artist, album..."
+      bind:value={playlistQuery}
+    />
+  </div>
+
+  {#if filteredTracks.length === 0}
+    <p class="empty">No tracks match this search.</p>
+  {:else}
+    <div
+      class="playlist-viewport"
+      on:scroll={handlePlaylistScroll}
+      style={`height: ${PLAYLIST_VIEWPORT_HEIGHT}px;`}
+    >
+      <div style={`height: ${topSpacer}px;`}></div>
+
+      {#each visibleTracks as track (track.path)}
         <button
           class="track"
-          class:active={i === currentIndex}
-          on:click={() => playTrack(i)}
+          class:active={currentIndex >= 0 && track.path === tracks[currentIndex].path}
+          on:click={() => playTrackByPath(track.path)}
         >
           <div class="track-main">
             <span>{track.title}</span>
@@ -343,8 +419,10 @@ if (existingIndex !== -1) {
           </div>
         </button>
       {/each}
-    {/if}
-  </div>
+
+      <div style={`height: ${bottomSpacer}px;`}></div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -444,7 +522,7 @@ if (existingIndex !== -1) {
 
   .timeline {
     display: grid;
-    grid-template-columns: 44px 1fr 44px;
+    grid-template-columns: 56px 1fr 56px;
     align-items: center;
     gap: 10px;
     font-size: 12px;
@@ -463,41 +541,95 @@ if (existingIndex !== -1) {
   }
 
   .playlist {
-    min-height: 0;
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid rgba(159, 232, 255, 0.25);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(7, 12, 22, 0.5);
+}
 
-  .playlist h3 {
-    margin: 0;
-    font-size: 14px;
-    color: #9fe8ff;
-  }
+.playlist-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 
-  .track {
-    width: 100%;
-    text-align: left;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    align-items: center;
-  }
+.playlist-header h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #9fe8ff;
+  white-space: nowrap;
+}
 
-  .track.active {
-    border-color: #9fe8ff;
-    background: rgba(159, 232, 255, 0.22);
-  }
+.playlist-search {
+  flex: 1;
+  border: 1px solid rgba(159, 232, 255, 0.35);
+  border-radius: 8px;
+  background: rgba(10, 20, 35, 0.8);
+  color: #e8edf8;
+  padding: 8px 10px;
+  font-size: 12px;
+}
 
-  .track-main {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-    flex: 1;
-  }
+.playlist-search:focus {
+  outline: none;
+  border-color: rgba(159, 232, 255, 0.7);
+}
+
+.playlist-viewport {
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+.track {
+  width: 100%;
+  height: 56px;
+  text-align: left;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid rgba(159, 232, 255, 0.35);
+  border-radius: 8px;
+  background: rgba(17, 24, 39, 0.85);
+  color: #e8edf8;
+  cursor: pointer;
+  transition: 0.15s ease;
+  margin-bottom: 4px;
+}
+
+.track:hover {
+  background: rgba(159, 232, 255, 0.16);
+}
+
+.track.active {
+  border-color: #9fe8ff;
+  background: rgba(159, 232, 255, 0.22);
+}
+
+.track-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.track-main span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-main small,
+.track-meta small {
+  color: #c9d8ee;
+  font-size: 12px;
+}
 
   .track-meta {
     color: #bfd0e5;
@@ -510,3 +642,4 @@ if (existingIndex !== -1) {
     font-size: 13px;
   }
 </style>
+
