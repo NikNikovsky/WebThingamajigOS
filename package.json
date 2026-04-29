@@ -19,6 +19,6 @@
   "dependencies": {
     "jsmediatags": "^3.9.7",
     "lucide-svelte": "^1.0.1",
-    "svelte-spa-router": "^5.0.1"
+    "svelte-spa-router": "^5.1.0"
   }
 }
