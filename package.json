@@ -11,14 +11,14 @@
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "concurrently": "^9.2.1",
-    "svelte": "^5.55.5",
-    "vite": ">=8.0.13"
+    "svelte": "^5.55.7",
+    "vite": ">=8.0.10"
   },
   "dependencies": {
     "jsmediatags": "^3.9.7",
     "lucide-svelte": "^1.0.1",
-    "svelte-spa-router": "^5.0.1"
+    "svelte-spa-router": "^5.1.0"
   }
 }
