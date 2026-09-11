@@ -14,7 +14,7 @@
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "concurrently": "^10.0.4",
     "svelte": "^5.55.7",
-    "vite": ">=8.2.0"
+    "vite": ">=8.2.2"
   },
   "dependencies": {
     "jsmediatags": "^3.9.7",
